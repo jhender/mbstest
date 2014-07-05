@@ -23,17 +23,17 @@ public interface Consts {
     /**
      * Set Project ID of your Google APIs Console Project.
      */
-    public static final String PROJECT_ID = "tranquil-osprey-632";
+    public static final String PROJECT_ID = "***";
 
     /**
      * Set Project Number of your Google APIs Console Project.
      */
-    public static final String PROJECT_NUMBER = "373244135990";
+    public static final String PROJECT_NUMBER = "***";
 
     /**
      * Set your Web Client ID for authentication at backend.
      */
-    public static final String WEB_CLIENT_ID = "373244135990-0kaodnecd70uebj5c4spov5kl42b728k.apps.googleusercontent.com";
+    public static final String WEB_CLIENT_ID = "***";
 
     /**
      * Set default user authentication enabled or disabled.
