@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/marker_create_dialog"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="vertical" >
+
+	<TextView
+	    android:id="@+id/textView1"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentLeft="true"
+	    android:layout_alignParentTop="true"
+	    android:padding="10dp"
+	    android:text="Address: "
+	    android:textSize="16sp" />
+
+	<TextView
+	    android:id="@+id/textView2"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentLeft="true"
+	    android:layout_below="@id/textView1"
+	    android:paddingBottom="10dp"
+	    android:paddingLeft="20dp"
+	    android:paddingRight="20dp"
+	    android:paddingTop="0dp"
+	    android:text="Blank Address"
+	    android:textSize="14sp" />
+
+	<TextView
+	    android:id="@+id/textView3"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentLeft="true"
+	    android:layout_below="@id/textView2"
+	    android:padding="10dp"
+	    android:text="Coordinates:"
+	    android:textSize="16sp" />
+
+	<TextView
+	    android:id="@+id/textView4"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentLeft="true"
+	    android:layout_below="@id/textView3"
+	    android:paddingBottom="10dp"
+	    android:paddingLeft="20dp"
+	    android:paddingRight="20dp"
+	    android:text="1,1"
+	    android:textSize="14sp" />
+
+	<EditText
+	    android:id="@+id/marker_title"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentLeft="true"
+	    android:layout_below="@+id/textView4"
+	    android:ems="10"
+	    android:hint="@string/marker_title"
+	    android:inputType="textCapWords"
+	    android:paddingBottom="20dp"
+	    android:paddingLeft="20dp"
+	    android:paddingRight="20dp"
+	    android:paddingTop="10dp"
+	     />
+	
+</RelativeLayout>

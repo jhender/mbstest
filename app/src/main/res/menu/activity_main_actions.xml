@@ -1,0 +1,31 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+<!--     <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/action_settings"/> -->
+<!--     <item
+        android:id="@+id/delete_all_markers"
+        android:orderInCategory="90"
+        android:icon="@drawable/ic_launcher_map"
+        android:title="@string/delete_all_markers"/> -->
+     <item
+        android:id="@+id/about"
+        android:orderInCategory="90"
+        android:title="@string/title_activity_about"
+        android:showAsAction="never"/>  
+    <item
+        android:id="@+id/location_list"
+        android:orderInCategory="80"
+        android:title="@string/location_list"
+        android:showAsAction="ifRoom"
+        android:icon="@drawable/ic_action_view_as_list"/> 
+    <item
+        android:id="@+id/save_my_location"
+        android:orderInCategory="70"
+        android:showAsAction="ifRoom"
+        android:icon="@drawable/ic_action_new"
+        android:title="@string/save_my_location"/>  
+        
+</menu>

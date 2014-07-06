@@ -2,24 +2,6 @@
 <pre-dex-items>
 
     <item
-        dex="E:\Users\JianHui.Ho\AndroidStudioProjects\mbstest\app\build\intermediates\pre-dexed\debug\gson-2.1-22617464929503c2de15d372d9b3136301288761.jar"
-        jar="E:\Users\JianHui.Ho\.gradle\caches\modules-2\files-2.1\com.google.code.gson\gson\2.1\2e66da15851f9f5b5079228f856c2f090ba98c38\gson-2.1.jar"
-        jumboMode="false"
-        revision="20.0.0"
-        sha1="2e66da15851f9f5b5079228f856c2f090ba98c38"/>
-    <item
-        dex="E:\Users\JianHui.Ho\AndroidStudioProjects\mbstest\app\build\intermediates\pre-dexed\debug\google-http-client-gson-1.17.0-rc-8850b1ecdc2509ff5d3d2eb91390776c70df71be.jar"
-        jar="E:\Users\JianHui.Ho\.gradle\caches\modules-2\files-2.1\com.google.http-client\google-http-client-gson\1.17.0-rc\3696033c14cc5ce68fe3ac818bade2707df9c2cd\google-http-client-gson-1.17.0-rc.jar"
-        jumboMode="false"
-        revision="20.0.0"
-        sha1="3696033c14cc5ce68fe3ac818bade2707df9c2cd"/>
-    <item
-        dex="E:\Users\JianHui.Ho\AndroidStudioProjects\mbstest\app\build\intermediates\pre-dexed\debug\google-http-client-android-1.15.0-rc-9e906cfdf6409a5e60d9e4c65ad7f3831a89b1ef.jar"
-        jar="E:\Users\JianHui.Ho\AndroidStudioProjects\mbstest\app\libs\google-http-client-android-1.15.0-rc.jar"
-        jumboMode="false"
-        revision="20.0.0"
-        sha1="5486db35ce42d604ebf39aefed07b98f4e3cb677"/>
-    <item
         dex="E:\Users\JianHui.Ho\AndroidStudioProjects\mbstest\app\build\intermediates\pre-dexed\debug\google-api-client-android-1.15.0-rc-ab08ac40f2e08f92c4a89ba14683bc5ecc80e6a3.jar"
         jar="E:\Users\JianHui.Ho\AndroidStudioProjects\mbstest\app\libs\google-api-client-android-1.15.0-rc.jar"
         jumboMode="false"
@@ -32,6 +14,12 @@
         revision="20.0.0"
         sha1="e40b3078e3fbd353c9f44da8df25a8fc0078209d"/>
     <item
+        dex="E:\Users\JianHui.Ho\AndroidStudioProjects\mbstest\app\build\intermediates\pre-dexed\debug\libGoogleAnalyticsServices-4ec78890b7ed1f5e69d79dd72292a87dedb1c979.jar"
+        jar="E:\Users\JianHui.Ho\AndroidStudioProjects\mbstest\app\libs\libGoogleAnalyticsServices.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="e887c6c9b31b39a39b0eaba981448b78902ea813"/>
+    <item
         dex="E:\Users\JianHui.Ho\AndroidStudioProjects\mbstest\app\build\intermediates\pre-dexed\debug\classes-30dcedd50fa6f55ca1c05cfc1e821fe4ff1afbd5.jar"
         jar="E:\Users\JianHui.Ho\AndroidStudioProjects\mbstest\build\intermediates\exploded-aar\com.google.android.gms\play-services\5.0.77\classes.jar"
         jumboMode="false"
@@ -43,6 +31,12 @@
         jumboMode="false"
         revision="20.0.0"
         sha1="9d9013e9ff35fc3756411e62873c363c70c638fa"/>
+    <item
+        dex="E:\Users\JianHui.Ho\AndroidStudioProjects\mbstest\app\build\intermediates\pre-dexed\debug\gson-2.1-22617464929503c2de15d372d9b3136301288761.jar"
+        jar="E:\Users\JianHui.Ho\.gradle\caches\modules-2\files-2.1\com.google.code.gson\gson\2.1\2e66da15851f9f5b5079228f856c2f090ba98c38\gson-2.1.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="2e66da15851f9f5b5079228f856c2f090ba98c38"/>
     <item
         dex="E:\Users\JianHui.Ho\AndroidStudioProjects\mbstest\app\build\intermediates\pre-dexed\debug\classes-a3eed94b195229b44d4de8405e6ed52dfb276e15.jar"
         jar="E:\Users\JianHui.Ho\AndroidStudioProjects\mbstest\build\intermediates\exploded-aar\com.android.support\support-v4\20.0.0\classes.jar"
@@ -61,6 +55,18 @@
         jumboMode="false"
         revision="20.0.0"
         sha1="b17470f1eae28f420a38fa11edbbdc6aaeea6ef3"/>
+    <item
+        dex="E:\Users\JianHui.Ho\AndroidStudioProjects\mbstest\app\build\intermediates\pre-dexed\debug\google-http-client-gson-1.17.0-rc-8850b1ecdc2509ff5d3d2eb91390776c70df71be.jar"
+        jar="E:\Users\JianHui.Ho\.gradle\caches\modules-2\files-2.1\com.google.http-client\google-http-client-gson\1.17.0-rc\3696033c14cc5ce68fe3ac818bade2707df9c2cd\google-http-client-gson-1.17.0-rc.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="3696033c14cc5ce68fe3ac818bade2707df9c2cd"/>
+    <item
+        dex="E:\Users\JianHui.Ho\AndroidStudioProjects\mbstest\app\build\intermediates\pre-dexed\debug\google-http-client-android-1.15.0-rc-9e906cfdf6409a5e60d9e4c65ad7f3831a89b1ef.jar"
+        jar="E:\Users\JianHui.Ho\AndroidStudioProjects\mbstest\app\libs\google-http-client-android-1.15.0-rc.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="5486db35ce42d604ebf39aefed07b98f4e3cb677"/>
     <item
         dex="E:\Users\JianHui.Ho\AndroidStudioProjects\mbstest\app\build\intermediates\pre-dexed\debug\google-http-client-1.17.0-rc-93f9f3cc641cf09db557ab8c3a544032141cc443.jar"
         jar="E:\Users\JianHui.Ho\.gradle\caches\modules-2\files-2.1\com.google.http-client\google-http-client\1.17.0-rc\637da6cca16f4a97c4771137bce02e7c291e67af\google-http-client-1.17.0-rc.jar"

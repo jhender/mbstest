@@ -9,8 +9,6 @@ package com.jhdev.mbstest.main;
 
 public final class Manifest {
     public static final class permission {
-        /**  <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="19"/> 
-         */
-        public static final String C2D_MESSAGE="com.jhdev.mbstest.main.permission.C2D_MESSAGE";
+        public static final String MAPS_RECEIVE="com.jhdev.mbstest.main.permission.MAPS_RECEIVE";
     }
 }
