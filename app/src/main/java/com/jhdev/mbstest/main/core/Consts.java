@@ -66,5 +66,5 @@ public interface Consts {
     /**
      * Tag name for logging.
      */
-    public static final String TAG = "CloudBackend";
+    public static final String TAG = "CloudBackend_simplepin";
 }

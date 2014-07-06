@@ -18,6 +18,12 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <!-- Maps API needs OpenGL ES 2.0. -->
+
+    <uses-permission android:name="com.jhdev.mbstest.main.permission.C2D_MESSAGE" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true" />
@@ -80,6 +86,20 @@
             android:name=".simplepin.LocationsContentProvider"
             android:authorities="com.jhdev.mbstest.main.simplepin.locations"
             android:exported="false" />
+
+        <service android:name=".GCMIntentService" />
+
+        <receiver
+        android:name=".GCMBroadcastReceiver"
+        android:permission="com.google.android.c2dm.permission.SEND" >
+        <intent-filter>
+        <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+        <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+
+        <category android:name="com.google.cloud.solutions.sampleapps.mobilebackend" />
+        </intent-filter>
+        </receiver>
+
 
     </application>
 

@@ -6,6 +6,8 @@ import java.util.Locale;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -42,10 +44,20 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.jhdev.mbstest.main.R;
+import com.jhdev.mbstest.main.core.CloudBackend;
+import com.jhdev.mbstest.main.core.CloudBackendAsync;
+import com.jhdev.mbstest.main.core.CloudBackendFragment;
+import com.jhdev.mbstest.main.core.CloudBackendFragment.OnListener;
+import com.jhdev.mbstest.main.core.CloudCallbackHandler;
+import com.jhdev.mbstest.main.core.CloudEntity;
+import com.jhdev.mbstest.main.core.Consts;
+//import com.jhdev.mbstest.main.guestbook.SplashFragment;
+
+
 
 public class MainActivity extends FragmentActivity 
 	implements LoaderCallbacks<Cursor>, MarkerCreateDialogFragment.MarkerCreateDialogListener,
-    GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener{
+    GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener, OnListener {
 	
 //	private ShareActionProvider mShareActionProvider;
  	 
@@ -57,6 +69,16 @@ public class MainActivity extends FragmentActivity
 	public static LatLng lastMarkerLatLng = null;
 	LocationClient mLocationClient;
 	Location mCurrentLocation;
+
+    private FragmentManager mFragmentManager;
+    private CloudBackendFragment mProcessingFragment;
+//    private SplashFragment mSplashFragment;
+
+    private static final String PROCESSING_FRAGMENT_TAG = "BACKEND_FRAGMENT";
+    private static final String SPLASH_FRAGMENT_TAG = "SPLASH_FRAGMENT";
+
+    private static final String BROADCAST_PROP_DURATION = "duration";
+    private static final String BROADCAST_PROP_MESSAGE = "message";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -215,8 +237,10 @@ public class MainActivity extends FragmentActivity
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lastMarkerLatLng,10));                       
         	}        	
         }
-        
-    //end of section
+
+        mFragmentManager = getFragmentManager();
+        initiateFragments();
+        //end of section
     }
 
     @Override
@@ -430,13 +454,77 @@ public class MainActivity extends FragmentActivity
         
         Toast.makeText(getBaseContext(), "Marker is added to the Map.\nAddress: " + newMarkerCompleteAddress, Toast.LENGTH_SHORT).show();                
 
-	}   
-   
+        // New Cloud Backend Appengine Entity
+        CloudEntity ce = new CloudEntity("simplepin");
+        ce.put("title", newMarkerTitle);
+        ce.put("address", newMarkerCompleteAddress);
+        ce.put("latitude", newMarkerLatLng.latitude);
+        ce.put("longitude", newMarkerLatLng.longitude);
+
+        CloudCallbackHandler<CloudEntity> handler = new CloudCallbackHandler<CloudEntity>() {
+            @Override
+            public void onComplete(final CloudEntity result) {
+//                mPosts.add(0, result);
+//                updateGuestbookView();
+//                mMessageTxt.setText("");
+//                mMessageTxt.setEnabled(true);
+//                mSendBtn.setEnabled(true);
+            }
+
+            @Override
+            public void onError(final IOException exception) {
+                handleEndpointException(exception);
+            }
+        };
+
+        // execute the insertion with the handler
+        mProcessingFragment.getCloudBackend().insert(ce, handler);
+
+//
+//            CloudBackend cb = new CloudBackend();
+//        CloudBackendAsync cba = new CloudBackendAsync(getApplicationContext());
+//        try {
+//            cba.insert(ce);
+//            Toast.makeText(getBaseContext(), "datastore save", Toast.LENGTH_SHORT).show();
+//        } catch (IOException e) {
+//            Toast.makeText(getBaseContext(), "datastore failed", Toast.LENGTH_SHORT).show();
+//        }
+
+
+//        cloudInsert(ce);
+//        //TODO do in background to see if it solves the error
+//        CloudBackend cb = new CloudBackend();
+//        try {
+//            cb.insert(ce);
+//            Toast.makeText(getBaseContext(), "datastore save", Toast.LENGTH_SHORT).show();
+//        } catch (IOException e) {
+//            Toast.makeText(getBaseContext(), "datastore failed", Toast.LENGTH_SHORT).show();
+//        }
+	}
+
+//    private class cloudInsert extends AsyncTask<CloudEntity, Void, Void> {
+//        CloudBackend cb = new CloudBackend();
+//
+//            protected String doInBackground(CloudEntity ce) {
+//                // Do work
+//                try {
+//                    cb.insert(ce);
+//                    Toast.makeText(getBaseContext(), "datastore save", Toast.LENGTH_SHORT).show();
+//                } catch (IOException e) {
+//                    Toast.makeText(getBaseContext(), "datastore failed", Toast.LENGTH_SHORT).show();
+//                }
+////            @Override protected void onPostExecute(String result) {
+////                Log.d("MyAsyncTask", "Received result: " + result);
+////            }
+//        }
+//
+//    }
+
 
 	@Override
 	public void onDialogNegativeClick(DialogFragment dialog) {
         Log.i("MarkerCrateAlertDialog", "Negative click!");
-		
+
 	}
 
     @Override
@@ -572,10 +660,51 @@ public class MainActivity extends FragmentActivity
 
     }
 
-    
-    
-    
-    
-    
-    
+    //For CLoudBackend Processing
+    private void initiateFragments() {
+        FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+
+        // Check to see if we have retained the fragment which handles
+        // asynchronous backend calls
+        mProcessingFragment = (CloudBackendFragment) mFragmentManager.
+                findFragmentByTag(PROCESSING_FRAGMENT_TAG);
+        // If not retained (or first time running), create a new one
+        if (mProcessingFragment == null) {
+            mProcessingFragment = new CloudBackendFragment();
+            mProcessingFragment.setRetainInstance(true);
+            fragmentTransaction.add(mProcessingFragment, PROCESSING_FRAGMENT_TAG);
+        }
+
+        // Add the splash screen fragment
+//        mSplashFragment = new SplashFragment();
+//        fragmentTransaction.add(R.id.activity_main, mSplashFragment, SPLASH_FRAGMENT_TAG);
+        fragmentTransaction.commit();
+    }
+
+    private void handleEndpointException(IOException e) {
+        Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show();
+        //mSendBtn.setEnabled(true);
+    }
+
+
+    /**
+     * Method called via OnListener in {@link com.google.cloud.backend.core.CloudBackendFragment}.
+     */
+    @Override
+    public void onBroadcastMessageReceived(List<CloudEntity> l) {
+        for (CloudEntity e : l) {
+            String message = (String) e.get(BROADCAST_PROP_MESSAGE);
+            int duration = Integer.parseInt((String) e.get(BROADCAST_PROP_DURATION));
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            Log.i(Consts.TAG, "A message was recieved with content: " + message);
+        }
+    }
+
+    /**
+     * Method called via OnListener in {@link com.google.cloud.backend.core.CloudBackendFragment}.
+     */
+    @Override
+    public void onCreateFinished() {
+//        listPosts();
+    }
 }
