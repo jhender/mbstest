@@ -13,14 +13,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.jhdev.mbstest.main.R;
 
 public class LocationDetailActivity extends Activity {
-
-	private ShareActionProvider myShareActionProvider;
 
 	private static final String TAG = "detail tag";
 	static String value2 = null;
@@ -54,7 +51,7 @@ public class LocationDetailActivity extends Activity {
             }
         // Get data via the key
         value1 = extras.getString("title");
-        value2 = extras.getString("ids");
+        value2 = extras.getString("id");
 
         // value1 is from mapview after marker is clicked.
         if (value1 != null) {
@@ -66,16 +63,22 @@ public class LocationDetailActivity extends Activity {
         if (value2 != null) {
 	    	Log.d(TAG, "getExtra value2: " + value2 );
 
-			ContentResolver content = getContentResolver();
-			Uri uri = Uri.withAppendedPath(LocationsContentProvider.CONTENT_URI, value2);
-			Cursor cursor = content.query(uri, null, null, null, null);
-			cursor.moveToFirst();
-			id = cursor.getLong(0);
-			titletext = cursor.getString(6);
-			addtext = cursor.getString(4);
-			lattext = cursor.getString(1);
-			lngtext = cursor.getString(2);
-			coortext = lattext + ", " + lngtext;
+//			ContentResolver content = getContentResolver();
+//			Uri uri = Uri.withAppendedPath(LocationsContentProvider.CONTENT_URI, value2);
+//			Cursor cursor = content.query(uri, null, null, null, null);
+//			cursor.moveToFirst();
+//			id = cursor.getLong(0);
+//			titletext = cursor.getString(6);
+//			addtext = cursor.getString(4);
+//			lattext = cursor.getString(1);
+//			lngtext = cursor.getString(2);
+//			coortext = lattext + ", " + lngtext;
+            titletext = extras.getString("title");
+            addtext = extras.getString("address");
+            lattext = extras.getString("lat");
+            lngtext = extras.getString("lng");
+            id = extras.getLong("id");
+            coortext = lattext + ", " + lngtext;
 
 		    title.setText(titletext);
 		    add.setText(addtext);

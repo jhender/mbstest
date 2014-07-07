@@ -23,7 +23,6 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.jhdev.mbstest.main.R;
-import com.jhdev.mbstest.main.core.CloudBackend;
 import com.jhdev.mbstest.main.core.CloudBackendFragment;
 import com.jhdev.mbstest.main.core.CloudCallbackHandler;
 import com.jhdev.mbstest.main.core.CloudEntity;
@@ -111,9 +110,8 @@ public class LocationList extends ListActivity
                     public void onError(IOException exception) {
 //                        mAnnounceTxt.setText(R.string.announce_fail);
 //                        animateArrival();
-//                        handleEndpointException(exception);
-                        Toast.makeText(getBaseContext(), "cq list failed", Toast.LENGTH_SHORT).show();
-
+                        handleEndpointException(exception);
+//                        Toast.makeText(getBaseContext(), "cq list failed", Toast.LENGTH_SHORT).show();
                     }
                 };
 
@@ -153,14 +151,19 @@ public class LocationList extends ListActivity
     @Override 
     public void onListItemClick(ListView l, View v, int position, long id) {
         // Do something when a list item is clicked
-     	
+     	CloudEntity ce = pins.get(position);
+
     	Intent intent = new Intent(LocationList.this, LocationDetailActivity.class);
-    	
-    	intent.putExtra("position", position);
-    	String ids = String.valueOf(id);
-    	intent.putExtra("ids", ids);
-    	Log.d("detail tag1", "onListItemClick position=" + position +"\n ID=" + ids + "\n View=" + v + "\n ListView=" + l ); 
-    	
+//    	intent.putExtra("position", position);
+//    	String ids = String.valueOf(id);
+//    	intent.putExtra("ids", ids);
+//    	Log.d("detail tag1", "onListItemClick position=" + position +"\n ID=" + ids + "\n View=" + v + "\n ListView=" + l );
+        intent.putExtra("id", ce.getId());
+        intent.putExtra("title", ce.get("title").toString());
+        intent.putExtra("address", ce.get("address").toString());
+        intent.putExtra("lat", ce.get("latitude").toString());
+        intent.putExtra("lng", ce.get("longitude").toString());
+
     	startActivity(intent);    	    	    	
     }
     
