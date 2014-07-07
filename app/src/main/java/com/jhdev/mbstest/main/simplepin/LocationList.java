@@ -269,12 +269,6 @@ public class LocationList extends ListActivity
     }
 
     private void updateList() {
-//        mListView.setAdapter(
-//                new PinAdapter(
-//                        this,
-//                        android.R.layout.simple_list_item_1,
-//                        pins)
-//        );
         Log.d("log", "start updateList" );
         mListView.setAdapter(
                 new PinAdapter(this, R.layout.list_item, pins)

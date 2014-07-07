@@ -108,7 +108,7 @@ public class MainActivity extends FragmentActivity
 	            CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
 	            googleMap.moveCamera(center);
 	            googleMap.animateCamera(zoom);
-            };
+            }
         }
 
         // Listen for Marker clicks
@@ -122,7 +122,7 @@ public class MainActivity extends FragmentActivity
         
         // Listen for Map Long clicks to create and save new markers
         googleMap.setOnMapLongClickListener(new OnMapLongClickListener() {
-             @Override
+            @Override
             public void onMapLongClick(LatLng point) {
             	
             	newMarkerLatLng = point;
@@ -275,26 +275,26 @@ public class MainActivity extends FragmentActivity
         googleMap.addMarker(markerOptions);              
     }*/
  
-    private class LocationInsertTask extends AsyncTask<ContentValues, Void, Void>{
-        @Override
-        protected Void doInBackground(ContentValues... contentValues) {
- 
-            /** Setting up values to insert the clicked location into SQLite database */
-            getContentResolver().insert(LocationsContentProvider.CONTENT_URI, contentValues[0]);
-            return null;
-        }
-    }
- 
-    private class LocationDeleteTask extends AsyncTask<Void, Void, Void>{
-        @Override
-        protected Void doInBackground(Void... params) {
- 
-            /** Deleting all the locations stored in SQLite database */
-            getContentResolver().delete(LocationsContentProvider.CONTENT_URI, null, null);
-            return null;
-        }
-    }
- 
+//    private class LocationInsertTask extends AsyncTask<ContentValues, Void, Void>{
+//        @Override
+//        protected Void doInBackground(ContentValues... contentValues) {
+//
+//            /** Setting up values to insert the clicked location into SQLite database */
+//            getContentResolver().insert(LocationsContentProvider.CONTENT_URI, contentValues[0]);
+//            return null;
+//        }
+//    }
+//
+//    private class LocationDeleteTask extends AsyncTask<Void, Void, Void>{
+//        @Override
+//        protected Void doInBackground(Void... params) {
+//
+//            /** Deleting all the locations stored in SQLite database */
+//            getContentResolver().delete(LocationsContentProvider.CONTENT_URI, null, null);
+//            return null;
+//        }
+//    }
+//
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -318,11 +318,12 @@ public class MainActivity extends FragmentActivity
     @Override
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
  
-        // Uri to the content provider LocationsContentProvider
-        Uri uri = LocationsContentProvider.CONTENT_URI;
- 
-        // Fetches all the rows from locations table
-        return new CursorLoader(this, uri, null, null, null, null);
+//        // Uri to the content provider LocationsContentProvider
+//        Uri uri = LocationsContentProvider.CONTENT_URI;
+//
+//        // Fetches all the rows from locations table
+//        return new CursorLoader(this, uri, null, null, null, null);
+        return null;
     }
  
     @Override
@@ -400,26 +401,6 @@ public class MainActivity extends FragmentActivity
         Log.i("MarkerCreateAlertDialog", "Return EditText_to_s:" + newMarkerTitle);
         Log.i("MarkerCreateAlertDialog", "Return newMarkerCompleteAddress:" + newMarkerCompleteAddress);
         Log.i("MarkerCreateAlertDialog", "Return newMarkerLatLng:" + newMarkerLatLng);
-        // assign text
-        
-        // Save a new marker       
-
-        // Creating an instance of ContentValues
-        ContentValues contentValues = new ContentValues();
-
-        // Setting latitude in ContentValues
-        contentValues.put(LocationsContentProvider.FIELD_LAT, newMarkerLatLng.latitude );
-        contentValues.put(LocationsContentProvider.FIELD_LNG, newMarkerLatLng.longitude);
-        contentValues.put(LocationsContentProvider.FIELD_ZOOM, googleMap.getCameraPosition().zoom);
-        contentValues.put(LocationsContentProvider.FIELD_ADDRESS, newMarkerCompleteAddress);
-        contentValues.put(LocationsContentProvider.FIELD_SUB_MAP_ID, "1");
-        contentValues.put(LocationsContentProvider.FIELD_TITLE, newMarkerTitle);
-
-        // Creating an instance of LocationInsertTask
-        LocationInsertTask insertTask = new LocationInsertTask();
-
-        // Storing the latitude, longitude and zoom level to SQLite database
-        insertTask.execute(contentValues);
         
         // Get address and create full new marker            		
         Marker marker = googleMap.addMarker(new MarkerOptions()
@@ -431,7 +412,6 @@ public class MainActivity extends FragmentActivity
         marker.showInfoWindow();
         //drawMarker(point);
     	googleMap.moveCamera(CameraUpdateFactory.newLatLng(newMarkerLatLng));
-
         
         Toast.makeText(getBaseContext(), "Marker is added to the Map.\nAddress: " + newMarkerCompleteAddress, Toast.LENGTH_SHORT).show();                
 
@@ -460,29 +440,8 @@ public class MainActivity extends FragmentActivity
             }
         };
 
-        // execute the insertion with the handler
+        // execute the cloud insertion with the handler
         mProcessingFragment.getCloudBackend().insert(ce, handler);
-
-//
-//            CloudBackend cb = new CloudBackend();
-//        CloudBackendAsync cba = new CloudBackendAsync(getApplicationContext());
-//        try {
-//            cba.insert(ce);
-//            Toast.makeText(getBaseContext(), "datastore save", Toast.LENGTH_SHORT).show();
-//        } catch (IOException e) {
-//            Toast.makeText(getBaseContext(), "datastore failed", Toast.LENGTH_SHORT).show();
-//        }
-
-
-//        cloudInsert(ce);
-//        //TODO do in background to see if it solves the error
-//        CloudBackend cb = new CloudBackend();
-//        try {
-//            cb.insert(ce);
-//            Toast.makeText(getBaseContext(), "datastore save", Toast.LENGTH_SHORT).show();
-//        } catch (IOException e) {
-//            Toast.makeText(getBaseContext(), "datastore failed", Toast.LENGTH_SHORT).show();
-//        }
 	}
 
 	@Override
@@ -496,17 +455,17 @@ public class MainActivity extends FragmentActivity
     	switch (item.getItemId()) {
     	
     	case R.id.delete_all_markers:
-    		// Removing all markers from the Google Map
-            googleMap.clear();
-
-            // Creating an instance of LocationDeleteTask
-            LocationDeleteTask deleteTask = new LocationDeleteTask();
-
-            // Deleting all the rows from SQLite database table
-            deleteTask.execute();
-
-            Toast.makeText(getBaseContext(), "All markers are removed", Toast.LENGTH_LONG).show();
-            return true;
+//    		// Removing all markers from the Google Map
+//            googleMap.clear();
+//
+//            // Creating an instance of LocationDeleteTask
+//            LocationDeleteTask deleteTask = new LocationDeleteTask();
+//
+//            // Deleting all the rows from SQLite database table
+//            deleteTask.execute();
+//
+//            Toast.makeText(getBaseContext(), "All markers are removed", Toast.LENGTH_LONG).show();
+//            return true;
     	case R.id.location_list:
     		startActivity(new Intent(this, LocationList.class));
     		break;
@@ -692,26 +651,33 @@ public class MainActivity extends FragmentActivity
     }
 
     private void updatePinsOnMap (){
+
+        double lat = 0;
+        double lng = 0;
+
         for (int i=0; i< masterPinList.size(); i++) {
-            Log.d("pin", masterPinList.get(i).get("title").toString());
+//            Log.d("pin", masterPinList.get(i).get("title").toString());
             CloudEntity ce = masterPinList.get(i);
 
-            double lat = Double.parseDouble(ce.get("latitude").toString());
-            double lng = Double.parseDouble(ce.get("longitude").toString());
+            lat = Double.parseDouble(ce.get("latitude").toString());
+            lng = Double.parseDouble(ce.get("longitude").toString());
             LatLng location = new LatLng(lat, lng);
 
-            String title = ce.get("title").toString();
-            if (title == ""){title = "Pin";}
+            String title;
+            if (ce.get("title") == "") {
+                title = "pin";
+            } else { title = ce.get("title").toString(); }
 
             String addr = ce.get("address").toString();
 
-            googleMap.addMarker(new MarkerOptions()
+            Marker marker = googleMap.addMarker(new MarkerOptions()
                     .position(location)
-                    .title(title)
-                    .snippet(addr)
+                    .title(addr)
+                    .snippet(title)
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-
+            marker.showInfoWindow();
         }
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lat,lng)));
     }
 
 

@@ -16,7 +16,6 @@ public class About extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_about);
 
-
 		// Button click handler
 		Button obClose = (Button)findViewById(R.id.buttonClose);
 		obClose.setOnClickListener(new OnClickListener() {
