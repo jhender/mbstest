@@ -124,7 +124,6 @@ public class MainActivity extends FragmentActivity
         googleMap.setOnMapLongClickListener(new OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng point) {
-            	
             	newMarkerLatLng = point;
             	//start geo coder
     			Geocoder geoCoder = new Geocoder(getBaseContext(), Locale.getDefault());
@@ -243,6 +242,8 @@ public class MainActivity extends FragmentActivity
     	super.onResume();
     	Log.e("Intent", "onResume is called.");
 
+        updatePinsOnMap();
+
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
         	String id = extras.getString("ids");
@@ -263,20 +264,10 @@ public class MainActivity extends FragmentActivity
                 // Moving CameraPosition to this marker's position
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lastMarkerLatLng,mzoom));                       
         	}        	
-        }  else {
-            updatePinsOnMap();
         }
 
     }
-    
-/*    private void drawMarker(LatLng point){
-        // Creating an instance of MarkerOptions
-        MarkerOptions markerOptions = new MarkerOptions();
-         // Setting latitude and longitude for the marker
-        markerOptions.position(point);
-         // Adding marker on the Google Map
-        googleMap.addMarker(markerOptions);              
-    }*/
+
  
 //    private class LocationInsertTask extends AsyncTask<ContentValues, Void, Void>{
 //        @Override
@@ -434,7 +425,6 @@ public class MainActivity extends FragmentActivity
 //                mMessageTxt.setEnabled(true);
 //                mSendBtn.setEnabled(true);
                 Toast.makeText(getBaseContext(), "Marker saved to Cloud data", Toast.LENGTH_SHORT).show();
-
             }
 
             @Override
@@ -680,7 +670,7 @@ public class MainActivity extends FragmentActivity
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
             marker.showInfoWindow();
         }
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lat,lng)));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat,lng),14));
     }
 
 
