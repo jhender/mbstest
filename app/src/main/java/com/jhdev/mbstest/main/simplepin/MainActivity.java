@@ -1,6 +1,7 @@
 package com.jhdev.mbstest.main.simplepin;
  
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
@@ -48,6 +49,7 @@ import com.jhdev.mbstest.main.core.CloudBackendFragment;
 import com.jhdev.mbstest.main.core.CloudBackendFragment.OnListener;
 import com.jhdev.mbstest.main.core.CloudCallbackHandler;
 import com.jhdev.mbstest.main.core.CloudEntity;
+import com.jhdev.mbstest.main.core.CloudQuery;
 import com.jhdev.mbstest.main.core.Consts;
 
 public class MainActivity extends FragmentActivity 
@@ -69,6 +71,8 @@ public class MainActivity extends FragmentActivity
     private static final String PROCESSING_FRAGMENT_TAG = "BACKEND_FRAGMENT";
     private static final String BROADCAST_PROP_DURATION = "duration";
     private static final String BROADCAST_PROP_MESSAGE = "message";
+
+    private List<CloudEntity> masterPinList = new LinkedList<CloudEntity>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -323,54 +327,54 @@ public class MainActivity extends FragmentActivity
  
     @Override
     public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
-        int locationCount = 0;
-        double lat=0;
-        double lng=0;
-        float zoom=0;
-        
-        // Number of locations available in the SQLite database table
-        locationCount = arg1.getCount();
- 
-        // Move the current record pointer to the first row of the table
-        arg1.moveToFirst();
-  
-        for(int i=0;i<locationCount;i++){
- 
-        	// Get the details for putting into marker. I'm sure there's some way of condensing this.
-            // Get the latitude
-            lat = arg1.getDouble(arg1.getColumnIndex(LocationsContentProvider.FIELD_LAT));
-            Log.d(TAG, "marker: LAT :"  + lat );
-            lng = arg1.getDouble(arg1.getColumnIndex(LocationsContentProvider.FIELD_LNG));
-            zoom = arg1.getFloat(arg1.getColumnIndex(LocationsContentProvider.FIELD_ZOOM));
-             // Creating an instance of LatLng to plot the location in Google Maps
-            LatLng location = new LatLng(lat, lng);
-            String addr = arg1.getString(arg1.getColumnIndex(LocationsContentProvider.FIELD_ADDRESS));
-            // TODO replace sub_map_name once second table is joined
-            //String sub_map_name = arg1.getString(arg1.getColumnIndex(LocationsContentProvider.FIELD_SUB_MAP));            
-            String title = arg1.getString(arg1.getColumnIndex(LocationsContentProvider.FIELD_TITLE));
-            
-            googleMap.addMarker(new MarkerOptions()
-            		.position(location)
-            		//.title("submap: " + sub_map_name + "\n Title: " + title )
-            		.title(title)
-            		.snippet(addr)
-    				.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-             
-//            // Drawing the marker in the Google Maps
-//            drawMarker(location);
-            
-             // Traverse the pointer to the next row
-            arg1.moveToNext();
-        }
- 
-        if(locationCount>0 && lastMarkerLatLng == null){
-            // Moving CameraPosition to last clicked position
-        	googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lat,lng)));
-            // Setting the zoom level in the map on last position  is clicked
-            googleMap.animateCamera(CameraUpdateFactory.zoomTo(zoom));
-            }
+//        int locationCount = 0;
+//        double lat=0;
+//        double lng=0;
+//        float zoom=0;
+//
+//        // Number of locations available in the SQLite database table
+//        locationCount = arg1.getCount();
+//
+//        // Move the current record pointer to the first row of the table
+//        arg1.moveToFirst();
+//
+//        for(int i=0;i<locationCount;i++){
+//
+//        	// Get the details for putting into marker. I'm sure there's some way of condensing this.
+//            // Get the latitude
+//            lat = arg1.getDouble(arg1.getColumnIndex(LocationsContentProvider.FIELD_LAT));
+//            Log.d(TAG, "marker: LAT :"  + lat );
+//            lng = arg1.getDouble(arg1.getColumnIndex(LocationsContentProvider.FIELD_LNG));
+//            zoom = arg1.getFloat(arg1.getColumnIndex(LocationsContentProvider.FIELD_ZOOM));
+//             // Creating an instance of LatLng to plot the location in Google Maps
+//            LatLng location = new LatLng(lat, lng);
+//            String addr = arg1.getString(arg1.getColumnIndex(LocationsContentProvider.FIELD_ADDRESS));
+//            // TODO replace sub_map_name once second table is joined
+//            //String sub_map_name = arg1.getString(arg1.getColumnIndex(LocationsContentProvider.FIELD_SUB_MAP));
+//            String title = arg1.getString(arg1.getColumnIndex(LocationsContentProvider.FIELD_TITLE));
+//
+//            googleMap.addMarker(new MarkerOptions()
+//            		.position(location)
+//            		//.title("submap: " + sub_map_name + "\n Title: " + title )
+//            		.title(title)
+//            		.snippet(addr)
+//    				.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+//
+////            // Drawing the marker in the Google Maps
+////            drawMarker(location);
+//
+//             // Traverse the pointer to the next row
+//            arg1.moveToNext();
+//        }
+//
+//        if(locationCount>0 && lastMarkerLatLng == null){
+//            // Moving CameraPosition to last clicked position
+//        	googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lat,lng)));
+//            // Setting the zoom level in the map on last position  is clicked
+//            googleMap.animateCamera(CameraUpdateFactory.zoomTo(zoom));
+//            }
     }
- 
+
     @Override
     public void onLoaderReset(Loader<Cursor> arg0) {
         // TODO Auto-generated method stub
@@ -650,6 +654,65 @@ public class MainActivity extends FragmentActivity
      */
     @Override
     public void onCreateFinished() {
-//        listPosts();
+        listPins();
     }
+
+    private void listPins() {
+        // create a response handler that will receive the result or an error
+        CloudCallbackHandler<List<CloudEntity>> handler =
+                new CloudCallbackHandler<List<CloudEntity>>() {
+                    @Override
+                    public void onComplete(List<CloudEntity> results) {
+//                        mAnnounceTxt.setText(R.string.announce_success);
+//                        mPosts = results;
+//                        animateArrival();
+//                        updateGuestbookView();
+                        masterPinList = results;
+                        if (results != null) {
+                            Toast.makeText(getBaseContext(), "cq list size= " + results.size(), Toast.LENGTH_SHORT).show();
+                        }
+                        updatePinsOnMap();
+                    }
+
+                    @Override
+                    public void onError(IOException exception) {
+//                        mAnnounceTxt.setText(R.string.announce_fail);
+//                        animateArrival();
+//                        handleEndpointException(exception);
+                        Toast.makeText(getBaseContext(), "cq list failed", Toast.LENGTH_SHORT).show();
+
+                    }
+                };
+
+        // execute the query with the handler
+        // TODO watch out for the 50 Limit in place
+        mProcessingFragment.getCloudBackend().listByKind(
+                "simplepin", CloudEntity.PROP_CREATED_AT, CloudQuery.Order.DESC, 50,
+                CloudQuery.Scope.FUTURE_AND_PAST, handler);
+    }
+
+    private void updatePinsOnMap (){
+        for (int i=0; i< masterPinList.size(); i++) {
+            Log.d("pin", masterPinList.get(i).get("title").toString());
+            CloudEntity ce = masterPinList.get(i);
+
+            double lat = Double.parseDouble(ce.get("latitude").toString());
+            double lng = Double.parseDouble(ce.get("longitude").toString());
+            LatLng location = new LatLng(lat, lng);
+
+            String title = ce.get("title").toString();
+            if (title == ""){title = "Pin";}
+
+            String addr = ce.get("address").toString();
+
+            googleMap.addMarker(new MarkerOptions()
+                    .position(location)
+                    .title(title)
+                    .snippet(addr)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+
+        }
+    }
+
+
 }
