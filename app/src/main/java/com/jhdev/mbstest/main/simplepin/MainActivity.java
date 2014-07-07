@@ -44,23 +44,16 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.jhdev.mbstest.main.R;
-import com.jhdev.mbstest.main.core.CloudBackend;
-import com.jhdev.mbstest.main.core.CloudBackendAsync;
 import com.jhdev.mbstest.main.core.CloudBackendFragment;
 import com.jhdev.mbstest.main.core.CloudBackendFragment.OnListener;
 import com.jhdev.mbstest.main.core.CloudCallbackHandler;
 import com.jhdev.mbstest.main.core.CloudEntity;
 import com.jhdev.mbstest.main.core.Consts;
-//import com.jhdev.mbstest.main.guestbook.SplashFragment;
-
-
 
 public class MainActivity extends FragmentActivity 
 	implements LoaderCallbacks<Cursor>, MarkerCreateDialogFragment.MarkerCreateDialogListener,
     GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener, OnListener {
-	
-//	private ShareActionProvider mShareActionProvider;
- 	 
+
     protected static final String Alert = null;
 	private static final String TAG = null;
     public static String newMarkerCompleteAddress = null;
@@ -72,11 +65,8 @@ public class MainActivity extends FragmentActivity
 
     private FragmentManager mFragmentManager;
     private CloudBackendFragment mProcessingFragment;
-//    private SplashFragment mSplashFragment;
 
     private static final String PROCESSING_FRAGMENT_TAG = "BACKEND_FRAGMENT";
-    private static final String SPLASH_FRAGMENT_TAG = "SPLASH_FRAGMENT";
-
     private static final String BROADCAST_PROP_DURATION = "duration";
     private static final String BROADCAST_PROP_MESSAGE = "message";
 
@@ -90,17 +80,14 @@ public class MainActivity extends FragmentActivity
  
         // Showing status
         if(status!=ConnectionResult.SUCCESS){ // Google Play Services are not available
- 
             int requestCode = 10;
             Dialog dialog = GooglePlayServicesUtil.getErrorDialog(status, this, requestCode);
             dialog.show();
- 
         }else { // Google Play Services are available
         	Log.e("Load", "Google Play Services available");
             // Getting reference to the SupportMapFragment of activity_main.xml
             SupportMapFragment fm = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        	//MapFragment fm = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
- 
+
             // Getting GoogleMap object from the fragment
             googleMap = fm.getMap();
    
@@ -119,8 +106,6 @@ public class MainActivity extends FragmentActivity
 	            googleMap.animateCamera(zoom);
             };
         }
-        
-
 
         // Listen for Marker clicks
         googleMap.setOnMarkerClickListener(new OnMarkerClickListener() {
@@ -169,8 +154,7 @@ public class MainActivity extends FragmentActivity
     			//end Geocoder
                     			
     			// Start Dialog    			
-    			showMarkerCreateDialog();  
-    			
+    			showMarkerCreateDialog();
 
             }            
         });
@@ -198,7 +182,6 @@ public class MainActivity extends FragmentActivity
         	}
         });*/
 
-        
         // Listen for Intents from other apps
         // Get the intent that started this activity
         Intent intent = getIntent();
@@ -327,14 +310,9 @@ public class MainActivity extends FragmentActivity
     	
     	return true;
     }
-    
-
-    
-
  
     @Override
-    public Loader<Cursor> onCreateLoader(int arg0,
-        Bundle arg1) {
+    public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
  
         // Uri to the content provider LocationsContentProvider
         Uri uri = LocationsContentProvider.CONTENT_URI;
@@ -344,8 +322,7 @@ public class MainActivity extends FragmentActivity
     }
  
     @Override
-    public void onLoadFinished(Loader<Cursor> arg0,
-        Cursor arg1) {
+    public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
         int locationCount = 0;
         double lat=0;
         double lng=0;
@@ -469,6 +446,8 @@ public class MainActivity extends FragmentActivity
 //                mMessageTxt.setText("");
 //                mMessageTxt.setEnabled(true);
 //                mSendBtn.setEnabled(true);
+                Toast.makeText(getBaseContext(), "Marker saved to Cloud data", Toast.LENGTH_SHORT).show();
+
             }
 
             @Override
@@ -502,29 +481,9 @@ public class MainActivity extends FragmentActivity
 //        }
 	}
 
-//    private class cloudInsert extends AsyncTask<CloudEntity, Void, Void> {
-//        CloudBackend cb = new CloudBackend();
-//
-//            protected String doInBackground(CloudEntity ce) {
-//                // Do work
-//                try {
-//                    cb.insert(ce);
-//                    Toast.makeText(getBaseContext(), "datastore save", Toast.LENGTH_SHORT).show();
-//                } catch (IOException e) {
-//                    Toast.makeText(getBaseContext(), "datastore failed", Toast.LENGTH_SHORT).show();
-//                }
-////            @Override protected void onPostExecute(String result) {
-////                Log.d("MyAsyncTask", "Received result: " + result);
-////            }
-//        }
-//
-//    }
-
-
 	@Override
 	public void onDialogNegativeClick(DialogFragment dialog) {
         Log.i("MarkerCrateAlertDialog", "Negative click!");
-
 	}
 
     @Override
@@ -560,11 +519,9 @@ public class MainActivity extends FragmentActivity
     	return true;
     }
     
-    
     private void saveMyLocation() {
 		mCurrentLocation = mLocationClient.getLastLocation();
         //Toast.makeText(getBaseContext(), "save my location pressed = " + mCurrentLocation, Toast.LENGTH_LONG).show();
-
         
     	newMarkerLatLng = new LatLng(mCurrentLocation.getLatitude(),mCurrentLocation.getLongitude());
     	//start geo coder
@@ -599,16 +556,9 @@ public class MainActivity extends FragmentActivity
 		//end Geocoder
             			
 		// Start Dialog    			
-		showMarkerCreateDialog();  
-		
-
+		showMarkerCreateDialog();
     }
-    
-    
-    
-    
-    
-    
+
     //For Google Analytics
     @Override
     public void onStart() {
@@ -625,8 +575,6 @@ public class MainActivity extends FragmentActivity
       EasyTracker.getInstance(this).activityStop(this);  // Add this method.
       mLocationClient.disconnect(); // for location
     }
-
-    
     
     /*
      * Called by Location Services when the request to connect the
@@ -647,8 +595,7 @@ public class MainActivity extends FragmentActivity
     @Override
     public void onDisconnected() {
         // Display the connection status
-        Toast.makeText(this, "Disconnected. Please re-connect.",
-                Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Disconnected. Please re-connect.", Toast.LENGTH_SHORT).show();
     }
 
     /*
@@ -657,7 +604,6 @@ public class MainActivity extends FragmentActivity
      */
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-
     }
 
     //For CLoudBackend Processing
@@ -686,7 +632,6 @@ public class MainActivity extends FragmentActivity
         //mSendBtn.setEnabled(true);
     }
 
-
     /**
      * Method called via OnListener in {@link com.google.cloud.backend.core.CloudBackendFragment}.
      */
@@ -696,7 +641,7 @@ public class MainActivity extends FragmentActivity
             String message = (String) e.get(BROADCAST_PROP_MESSAGE);
             int duration = Integer.parseInt((String) e.get(BROADCAST_PROP_DURATION));
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-            Log.i(Consts.TAG, "A message was recieved with content: " + message);
+            Log.i(Consts.TAG, "A message was received with content: " + message);
         }
     }
 
