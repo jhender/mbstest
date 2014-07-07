@@ -242,10 +242,11 @@ public class MainActivity extends FragmentActivity
     protected void onResume(){
     	super.onResume();
     	Log.e("Intent", "onResume is called.");
+
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
         	String id = extras.getString("ids");
-        	
+
         	if (id != null){
         		Log.e("Intent", "Intent received, id=" + id);
     			ContentResolver content = getContentResolver();
@@ -262,7 +263,9 @@ public class MainActivity extends FragmentActivity
                 // Moving CameraPosition to this marker's position
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lastMarkerLatLng,mzoom));                       
         	}        	
-        }   	
+        }  else {
+            updatePinsOnMap();
+        }
 
     }
     
