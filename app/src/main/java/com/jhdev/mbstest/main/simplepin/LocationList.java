@@ -1,5 +1,7 @@
 package com.jhdev.mbstest.main.simplepin;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.ListActivity;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
@@ -18,16 +20,32 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.ShareActionProvider;
 import android.widget.Toast;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.jhdev.mbstest.main.R;
+import com.jhdev.mbstest.main.core.CloudBackend;
+import com.jhdev.mbstest.main.core.CloudBackendFragment;
+import com.jhdev.mbstest.main.core.CloudCallbackHandler;
+import com.jhdev.mbstest.main.core.CloudEntity;
+import com.jhdev.mbstest.main.core.CloudQuery;
+
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 public class LocationList extends ListActivity
-        implements LoaderCallbacks<Cursor> {
+        implements LoaderCallbacks<Cursor>, CloudBackendFragment.OnListener {
 
     // This is the Adapter being used to display the list's data
     SimpleCursorAdapter mAdapter;
+
+    private FragmentManager mFragmentManager;
+    private CloudBackendFragment mProcessingFragment;
+    private static final String PROCESSING_FRAGMENT_TAG = "BACKEND_FRAGMENT";
+
+    private ListView mListView;
+
+    private List<CloudEntity> pins = new LinkedList<CloudEntity>();
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -40,6 +58,8 @@ public class LocationList extends ListActivity
         progressBar.setIndeterminate(true);
         getListView().setEmptyView(progressBar);
 
+        mListView = getListView();
+
         // Must add the progress bar to the root of the layout
         ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
         root.addView(progressBar);
@@ -49,49 +69,64 @@ public class LocationList extends ListActivity
 //        int[] toViews = {android.R.id.text1}; // The TextView in simple_list_item_1
 
         // For the cursor adapter, specify which columns go into which views
-        String[] fromColumns = {LocationsContentProvider.FIELD_TITLE, LocationsContentProvider.FIELD_ADDRESS};
-        int[] toViews = {R.id.firstLine, R.id.secondLine}; // The TextView in simple_list_item_1
-        
-        
+//        String[] fromColumns = {LocationsContentProvider.FIELD_TITLE, LocationsContentProvider.FIELD_ADDRESS};
+//        int[] toViews = {R.id.firstLine, R.id.secondLine}; // The TextView in simple_list_item_1
+//
         // Create an empty adapter we will use to display the loaded data.
         // We pass null for the cursor, then update it in onLoadFinished()
-        mAdapter = new SimpleCursorAdapter(this, 
-                R.layout.list_item,
-                null,
-                fromColumns, 
-                toViews, 
-                0);
-        setListAdapter(mAdapter);
-        
-//        @Override
-//        public void onCreate(Bundle savedInstanceState) {
-//          super.onCreate(savedInstanceState);
-//          Cursor mCursor = getContacts();
-//          startManagingCursor(mCursor);
-//          // Now create a new list adapter bound to the cursor.
-//          // SimpleListAdapter is designed for binding to a Cursor.
-//          ListAdapter adapter = new SimpleCursorAdapter(
-//        		this, // Context.
-//              android.R.layout.two_line_list_item, // Specify the row template to use (here, two columns bound to the two retrieved cursor rows).
-//              mCursor, 					// Pass in the cursor to bind to. Array of cursor columns to bind to.
-//              new String[] { ContactsContract.Contacts._ID, ContactsContract.Contacts.DISPLAY_NAME },
-//              					// Parallel array of which template objects to bind to those columns.
-//              new int[] { android.R.id.text1, android.R.id.text2 });
-//
-//          // Bind to our new adapter.
-//          setListAdapter(adapter);
-//        }
-               
+//        mAdapter = new SimpleCursorAdapter(this,
+//                R.layout.list_item,
+//                null,
+//                fromColumns,
+//                toViews,
+//                0);
+//        setListAdapter(mAdapter);
 
         // Prepare the loader.  Either re-connect with an existing one,
         // or start a new one.
-        getLoaderManager().initLoader(0, null, this);
+//        getLoaderManager().initLoader(0, null, this);
+
+        mFragmentManager = getFragmentManager();
+        initiateFragments();
     }
-  
+
+    private void listPins() {
+        // create a response handler that will receive the result or an error
+        CloudCallbackHandler<List<CloudEntity>> handler =
+                new CloudCallbackHandler<List<CloudEntity>>() {
+                    @Override
+                    public void onComplete(List<CloudEntity> results) {
+//                        mAnnounceTxt.setText(R.string.announce_success);
+//                        mPosts = results;
+//                        animateArrival();
+//                        updateGuestbookView();
+                        pins = results;
+                        if (results != null) {
+                            Toast.makeText(getBaseContext(), "cq list size= " + results.size(), Toast.LENGTH_SHORT).show();
+                        }
+                        updateList();
+                    }
+
+                    @Override
+                    public void onError(IOException exception) {
+//                        mAnnounceTxt.setText(R.string.announce_fail);
+//                        animateArrival();
+//                        handleEndpointException(exception);
+                        Toast.makeText(getBaseContext(), "cq list failed", Toast.LENGTH_SHORT).show();
+
+                    }
+                };
+
+        // execute the query with the handler
+        // TODO watch out for the 50 Limit in place
+        mProcessingFragment.getCloudBackend().listByKind(
+                "simplepin", CloudEntity.PROP_CREATED_AT, CloudQuery.Order.DESC, 50,
+                CloudQuery.Scope.FUTURE_AND_PAST, handler);
+    }
+
     // Loading the data
     @Override
-    public Loader<Cursor> onCreateLoader(int arg0,
-        Bundle arg1) {
+    public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
  
         // Uri to the content provider LocationsContentProvider
         Uri uri = LocationsContentProvider.CONTENT_URI;
@@ -188,9 +223,63 @@ public class LocationList extends ListActivity
       // The rest of your onStop() code.
       EasyTracker.getInstance(this).activityStop(this);  // Add this method.
     }
-    
-   
-    
+
+    private void initiateFragments() {
+        FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+
+        // Check to see if we have retained the fragment which handles
+        // asynchronous backend calls
+        mProcessingFragment = (CloudBackendFragment) mFragmentManager.
+                findFragmentByTag(PROCESSING_FRAGMENT_TAG);
+        // If not retained (or first time running), create a new one
+        if (mProcessingFragment == null) {
+            mProcessingFragment = new CloudBackendFragment();
+            mProcessingFragment.setRetainInstance(true);
+            fragmentTransaction.add(mProcessingFragment, PROCESSING_FRAGMENT_TAG);
+        }
+
+        // Add the splash screen fragment
+        fragmentTransaction.commit();
+    }
+
+    private void handleEndpointException(IOException e) {
+        Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show();
+        //mSendBtn.setEnabled(true);
+    }
+
+    /**
+     * Method called via OnListener in {@link com.google.cloud.backend.core.CloudBackendFragment}.
+     */
+    @Override
+    public void onBroadcastMessageReceived(List<CloudEntity> l) {
+        for (CloudEntity e : l) {
+//            String message = (String) e.get(BROADCAST_PROP_MESSAGE);
+//            int duration = Integer.parseInt((String) e.get(BROADCAST_PROP_DURATION));
+//            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+//            Log.i(Consts.TAG, "A message was received with content: " + message);
+        }
+    }
+
+    /**
+     * Method called via OnListener in {@link com.google.cloud.backend.core.CloudBackendFragment}.
+     */
+    @Override
+    public void onCreateFinished() {
+        listPins();
+    }
+
+    private void updateList() {
+//        mListView.setAdapter(
+//                new PinAdapter(
+//                        this,
+//                        android.R.layout.simple_list_item_1,
+//                        pins)
+//        );
+        Log.d("log", "start updateList" );
+        mListView.setAdapter(
+                new PinAdapter(this, R.layout.list_item, pins)
+        );
+    }
     	
 }
 
