@@ -163,6 +163,7 @@ public class LocationList extends ListActivity
         intent.putExtra("address", ce.get("address").toString());
         intent.putExtra("lat", ce.get("latitude").toString());
         intent.putExtra("lng", ce.get("longitude").toString());
+        intent.putExtra("position", position);
 
     	startActivity(intent);    	    	    	
     }

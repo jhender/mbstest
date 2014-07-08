@@ -1,9 +1,9 @@
 package com.jhdev.mbstest.main.simplepin;
 
 import android.app.Activity;
-import android.content.ContentResolver;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -14,23 +14,44 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.jhdev.mbstest.main.R;
+import android.widget.Toast;
 
-public class LocationDetailActivity extends Activity {
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.jhdev.mbstest.main.R;
+import com.jhdev.mbstest.main.core.CloudBackendAsync;
+import com.jhdev.mbstest.main.core.CloudBackendFragment;
+import com.jhdev.mbstest.main.core.CloudCallbackHandler;
+import com.jhdev.mbstest.main.core.CloudEntity;
+import com.jhdev.mbstest.main.core.CloudQuery;
+import com.jhdev.mbstest.main.core.Consts;
+
+import java.io.IOException;
+import java.util.List;
+
+public class LocationDetailActivity extends Activity implements CloudBackendFragment.OnListener {
 
 	private static final String TAG = "detail tag";
 	static String value2 = null;
 	static String value1 = null;
 	static double lat = 0;
 	static double lng = 0;
-	static long id = 0;
+	static String id = null;
+    static int position = 0;
 	static String coortext = null;
     static String titletext = null;
     static String lattext = null;
     static String lngtext = null;
     static String addtext = null;
 
+    private FragmentManager mFragmentManager;
+    private CloudBackendFragment mProcessingFragment;
+
+    private static final String PROCESSING_FRAGMENT_TAG = "BACKEND_FRAGMENT";
+    private static final String BROADCAST_PROP_DURATION = "duration";
+    private static final String BROADCAST_PROP_MESSAGE = "message";
+
+    private CloudEntity cloudEntity = new CloudEntity("simplepin");
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -77,12 +98,14 @@ public class LocationDetailActivity extends Activity {
             addtext = extras.getString("address");
             lattext = extras.getString("lat");
             lngtext = extras.getString("lng");
-            id = extras.getLong("id");
+            id = extras.getString("id");
+            position = extras.getInt("position");
             coortext = lattext + ", " + lngtext;
 
 		    title.setText(titletext);
 		    add.setText(addtext);
 		    coor.setText(coortext);
+
         }
 
         //show in map button
@@ -94,7 +117,8 @@ public class LocationDetailActivity extends Activity {
             	//String title = String.valueOf(marker.getTitle());
             	String ids = String.valueOf(id);
             	intent.putExtra("ids", ids);
-            	Log.d("TAG", "Button showinmap clicked. ids=" + ids );
+                intent.putExtra("position", position);
+            	Log.e("TAG", "Button ShowInMap clicked. ids=" + ids + " position= " + position );
 
             	startActivity(intent);
             }
@@ -120,14 +144,10 @@ public class LocationDetailActivity extends Activity {
             }
         });
 
-        //delete button
+        //delete button to remove this item.
         final Button button3 = (Button) findViewById(R.id.button3);
         button3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // Perform delete on click
-    			Uri uri = Uri.withAppendedPath(LocationsContentProvider.CONTENT_URI, value2);
-                /** Deleting all the locations stored in SQLite database */
-                getContentResolver().delete(uri, null, null);
 
                 //TODO add in toast message that it is destroyed.
                 //TODO should we add in a confirmation dialog popup?
@@ -135,13 +155,15 @@ public class LocationDetailActivity extends Activity {
 //                Intent intentMessage = new Intent();
 //                intentMessage.putExtra("MESSAGE", message);
 //                setResult(2, intentMessage);
-                finish();
+
+                cloudDelete();
 
             }
         });
 
-
-    // end onCreate
+        mFragmentManager = getFragmentManager();
+        initiateFragments();
+        // end onCreate
 	}
 
 	// For Sharing Intent via Action Bar.
@@ -197,5 +219,97 @@ public class LocationDetailActivity extends Activity {
       EasyTracker.getInstance(this).activityStop(this);  // Add this method.
     }
 
+    //For CLoudBackend Processing
+    private void initiateFragments() {
+        FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+
+        // Check to see if we have retained the fragment which handles
+        // asynchronous backend calls
+        mProcessingFragment = (CloudBackendFragment) mFragmentManager.
+                findFragmentByTag(PROCESSING_FRAGMENT_TAG);
+        // If not retained (or first time running), create a new one
+        if (mProcessingFragment == null) {
+            mProcessingFragment = new CloudBackendFragment();
+            mProcessingFragment.setRetainInstance(true);
+            fragmentTransaction.add(mProcessingFragment, PROCESSING_FRAGMENT_TAG);
+        }
+
+        fragmentTransaction.commit();
+    }
+
+    private void handleEndpointException(IOException e) {
+        Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show();
+        //mSendBtn.setEnabled(true);
+    }
+
+    /**
+     * Method called via OnListener in {@link com.google.cloud.backend.core.CloudBackendFragment}.
+     */
+    @Override
+    public void onBroadcastMessageReceived(List<CloudEntity> l) {
+        for (CloudEntity e : l) {
+            String message = (String) e.get(BROADCAST_PROP_MESSAGE);
+            int duration = Integer.parseInt((String) e.get(BROADCAST_PROP_DURATION));
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            Log.i(Consts.TAG, "A message was received with content: " + message);
+        }
+    }
+
+    /**
+     * Method called via OnListener in {@link com.google.cloud.backend.core.CloudBackendFragment}.
+     */
+    @Override
+    public void onCreateFinished() {
+        setCE();
+    }
+
+    private void setCE() {
+        CloudCallbackHandler<CloudEntity> handler = new CloudCallbackHandler<CloudEntity>() {
+            @Override
+            public void onComplete(final CloudEntity result) {
+                Toast.makeText(getBaseContext(), "Cloud Data updated", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(final IOException exception) {
+                handleEndpointException(exception);
+            }
+        };
+
+//        GoogleAccountCredential credential = GoogleAccountCredential.usingAudience(this, "<Web Client ID>");
+//        credential.setSelectedAccountName("<Google Account Name>");
+//        mProcessingFragment.getCloudBackend().setCredential(credential);
+
+//        CloudQuery cq = new CloudQuery("simplepin");
+//        cq.setLimit(1);
+//        cq.setFilter()
+//        mProcessingFragment.getCloudBackend().list(cq, handler);
+    }
+
+    private void cloudDelete () {
+        // Set status to "user disabled"
+        // TODO filter this out of normal List
+        cloudEntity.put("status", "user disabled");
+
+        CloudCallbackHandler<CloudEntity> handler = new CloudCallbackHandler<CloudEntity>() {
+            @Override
+            public void onComplete(final CloudEntity result) {
+                Toast.makeText(getBaseContext(), "Cloud Data updated", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(final IOException exception) {
+                handleEndpointException(exception);
+            }
+        };
+
+        GoogleAccountCredential credential = GoogleAccountCredential.usingAudience(this, "<Web Client ID>");
+        credential.setSelectedAccountName("<Google Account Name>");
+        mProcessingFragment.getCloudBackend().setCredential(credential);
+        // execute the cloud insertion with the handler
+        mProcessingFragment.getCloudBackend().update(cloudEntity, handler);
+
+        finish();
+    }
 
 }

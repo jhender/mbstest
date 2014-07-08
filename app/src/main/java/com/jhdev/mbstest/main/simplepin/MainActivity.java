@@ -10,18 +10,15 @@ import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.Menu;
@@ -242,7 +239,7 @@ public class MainActivity extends FragmentActivity
     	super.onResume();
     	Log.e("Intent", "onResume is called.");
 
-        updatePinsOnMap();
+//        updatePinsOnMap();
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -250,22 +247,14 @@ public class MainActivity extends FragmentActivity
 
         	if (id != null){
         		Log.e("Intent", "Intent received, id=" + id);
-    			ContentResolver content = getContentResolver();
-    			Uri uri = Uri.withAppendedPath(LocationsContentProvider.CONTENT_URI, id);
-    			Cursor cursor = content.query(uri, null, null, null, null);
-    			cursor.moveToFirst();
-    			double mlat = cursor.getDouble(1);
-    			double mlng = cursor.getDouble(2);
-    			String mtitle = cursor.getString(6);
-    			float mzoom = cursor.getFloat(3);
-    			lastMarkerLatLng = new LatLng(mlat, mlng);
-        		Log.e("Intent", "mlatlng=" + lastMarkerLatLng + "title: " + mtitle);
 
-                // Moving CameraPosition to this marker's position
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lastMarkerLatLng,mzoom));                       
+                CloudEntity ce = masterPinList.get(extras.getInt("position"));
+                Double lat = Double.parseDouble(ce.get("latitude").toString());
+                Double lng = Double.parseDouble(ce.get("longitude").toString());
+                LatLng markerLatLng = new LatLng(lat, lng);
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markerLatLng,15));
         	}        	
         }
-
     }
 
  
