@@ -17,14 +17,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.analytics.tracking.android.EasyTracker;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.jhdev.mbstest.main.R;
-import com.jhdev.mbstest.main.core.CloudBackendAsync;
 import com.jhdev.mbstest.main.core.CloudBackendFragment;
 import com.jhdev.mbstest.main.core.CloudCallbackHandler;
 import com.jhdev.mbstest.main.core.CloudEntity;
 import com.jhdev.mbstest.main.core.CloudQuery;
 import com.jhdev.mbstest.main.core.Consts;
+import com.jhdev.mbstest.main.core.Filter;
 
 import java.io.IOException;
 import java.util.List;
@@ -34,8 +33,6 @@ public class LocationDetailActivity extends Activity implements CloudBackendFrag
 	private static final String TAG = "detail tag";
 	static String value2 = null;
 	static String value1 = null;
-	static double lat = 0;
-	static double lng = 0;
 	static String id = null;
     static int position = 0;
 	static String coortext = null;
@@ -48,7 +45,6 @@ public class LocationDetailActivity extends Activity implements CloudBackendFrag
     private CloudBackendFragment mProcessingFragment;
 
     private static final String PROCESSING_FRAGMENT_TAG = "BACKEND_FRAGMENT";
-    private static final String BROADCAST_PROP_DURATION = "duration";
     private static final String BROADCAST_PROP_MESSAGE = "message";
 
     private CloudEntity cloudEntity = new CloudEntity("simplepin");
@@ -84,16 +80,6 @@ public class LocationDetailActivity extends Activity implements CloudBackendFrag
         if (value2 != null) {
 	    	Log.d(TAG, "getExtra value2: " + value2 );
 
-//			ContentResolver content = getContentResolver();
-//			Uri uri = Uri.withAppendedPath(LocationsContentProvider.CONTENT_URI, value2);
-//			Cursor cursor = content.query(uri, null, null, null, null);
-//			cursor.moveToFirst();
-//			id = cursor.getLong(0);
-//			titletext = cursor.getString(6);
-//			addtext = cursor.getString(4);
-//			lattext = cursor.getString(1);
-//			lngtext = cursor.getString(2);
-//			coortext = lattext + ", " + lngtext;
             titletext = extras.getString("title");
             addtext = extras.getString("address");
             lattext = extras.getString("lat");
@@ -114,7 +100,6 @@ public class LocationDetailActivity extends Activity implements CloudBackendFrag
             public void onClick(View v) {
 
             	Intent intent = new Intent(LocationDetailActivity.this, MainActivity.class);
-            	//String title = String.valueOf(marker.getTitle());
             	String ids = String.valueOf(id);
             	intent.putExtra("ids", ids);
                 intent.putExtra("position", position);
@@ -133,8 +118,6 @@ public class LocationDetailActivity extends Activity implements CloudBackendFrag
             	//String uriBegin = "geo:" + lattext + "," + lngtext;
             	String uriBegin = "https://maps.google.com/maps?q=loc:";
             	String query = lattext + "," + lngtext + "(" + titletext + ")";
-            	String encodedQuery = Uri.encode(query);
-            	//String uriString = uriBegin + "?q=" + encodedQuery + "&z=16";
             	String uriString = uriBegin + lattext + "," + lngtext + "(" + titletext + ")" + "&z=16";
             	Uri uri = Uri.parse(uriString);
             	Log.d("uri", "is:" + uri);
@@ -157,7 +140,6 @@ public class LocationDetailActivity extends Activity implements CloudBackendFrag
 //                setResult(2, intentMessage);
 
                 cloudDelete();
-
             }
         });
 
@@ -243,31 +225,42 @@ public class LocationDetailActivity extends Activity implements CloudBackendFrag
     }
 
     /**
-     * Method called via OnListener in {@link com.google.cloud.backend.core.CloudBackendFragment}.
+     * Method called via OnListener in {@link com.jhdev.mbstest.main.core.CloudBackendFragment}.
      */
     @Override
     public void onBroadcastMessageReceived(List<CloudEntity> l) {
         for (CloudEntity e : l) {
             String message = (String) e.get(BROADCAST_PROP_MESSAGE);
-            int duration = Integer.parseInt((String) e.get(BROADCAST_PROP_DURATION));
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
             Log.i(Consts.TAG, "A message was received with content: " + message);
         }
     }
 
     /**
-     * Method called via OnListener in {@link com.google.cloud.backend.core.CloudBackendFragment}.
+     * Method called via OnListener in {@link com.jhdev.mbstest.main.core.CloudBackendFragment}.
      */
     @Override
     public void onCreateFinished() {
         setCE();
     }
 
+    //Retrieve CloudEntity based on ID so that the Delete and Update will work later on.
     private void setCE() {
-        CloudCallbackHandler<CloudEntity> handler = new CloudCallbackHandler<CloudEntity>() {
+        CloudCallbackHandler<CloudEntity> handler =
+                new CloudCallbackHandler<CloudEntity>() {
             @Override
-            public void onComplete(final CloudEntity result) {
-                Toast.makeText(getBaseContext(), "Cloud Data updated", Toast.LENGTH_SHORT).show();
+            public void onComplete(CloudEntity result) {
+                if (result == null) {
+                    Log.d("retrieved list", "data: is empty");
+                    Toast.makeText(getBaseContext(), "Cloud data not retrieved.", Toast.LENGTH_SHORT).show();
+                }
+                else {
+//                    Toast.makeText(getBaseContext(), "Cloud Data updated" + result, Toast.LENGTH_SHORT).show();
+                    Log.d("retrieved list", "data: " + result.get("title"));
+                    //Set cloudEntity to retrieved Entity
+                    cloudEntity = result;
+                }
+
             }
 
             @Override
@@ -276,25 +269,23 @@ public class LocationDetailActivity extends Activity implements CloudBackendFrag
             }
         };
 
-//        GoogleAccountCredential credential = GoogleAccountCredential.usingAudience(this, "<Web Client ID>");
-//        credential.setSelectedAccountName("<Google Account Name>");
-//        mProcessingFragment.getCloudBackend().setCredential(credential);
+        CloudQuery cq = new CloudQuery("simplepin");
+        cq.setLimit(1);
+        cq.setFilter(Filter.eq("_id",id));
 
-//        CloudQuery cq = new CloudQuery("simplepin");
-//        cq.setLimit(1);
-//        cq.setFilter()
-//        mProcessingFragment.getCloudBackend().list(cq, handler);
+        cloudEntity.setId(id);
+        mProcessingFragment.getCloudBackend().get(cloudEntity, handler);
     }
 
+    // Set status from "active" to "user disabled"
     private void cloudDelete () {
-        // Set status to "user disabled"
-        // TODO filter this out of normal List
+        Log.e("cloudDelete","start");
         cloudEntity.put("status", "user disabled");
 
         CloudCallbackHandler<CloudEntity> handler = new CloudCallbackHandler<CloudEntity>() {
             @Override
             public void onComplete(final CloudEntity result) {
-                Toast.makeText(getBaseContext(), "Cloud Data updated", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getBaseContext(), "Pin deleted.", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -303,10 +294,6 @@ public class LocationDetailActivity extends Activity implements CloudBackendFrag
             }
         };
 
-        GoogleAccountCredential credential = GoogleAccountCredential.usingAudience(this, "<Web Client ID>");
-        credential.setSelectedAccountName("<Google Account Name>");
-        mProcessingFragment.getCloudBackend().setCredential(credential);
-        // execute the cloud insertion with the handler
         mProcessingFragment.getCloudBackend().update(cloudEntity, handler);
 
         finish();

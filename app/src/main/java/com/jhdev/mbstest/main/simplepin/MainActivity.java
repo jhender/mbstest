@@ -48,6 +48,7 @@ import com.jhdev.mbstest.main.core.CloudCallbackHandler;
 import com.jhdev.mbstest.main.core.CloudEntity;
 import com.jhdev.mbstest.main.core.CloudQuery;
 import com.jhdev.mbstest.main.core.Consts;
+import com.jhdev.mbstest.main.core.Filter;
 
 public class MainActivity extends FragmentActivity 
 	implements LoaderCallbacks<Cursor>, MarkerCreateDialogFragment.MarkerCreateDialogListener,
@@ -398,12 +399,13 @@ public class MainActivity extends FragmentActivity
         
         Toast.makeText(getBaseContext(), "Marker is added to the Map.\nAddress: " + newMarkerCompleteAddress, Toast.LENGTH_SHORT).show();                
 
-        // New Cloud Backend Appengine Entity
+        // New Cloud Backend AppEngine Entity
         CloudEntity ce = new CloudEntity("simplepin");
         ce.put("title", newMarkerTitle);
         ce.put("address", newMarkerCompleteAddress);
         ce.put("latitude", newMarkerLatLng.latitude);
         ce.put("longitude", newMarkerLatLng.longitude);
+        ce.put("status", "active");
 
         CloudCallbackHandler<CloudEntity> handler = new CloudCallbackHandler<CloudEntity>() {
             @Override
@@ -578,20 +580,19 @@ public class MainActivity extends FragmentActivity
     }
 
     /**
-     * Method called via OnListener in {@link com.google.cloud.backend.core.CloudBackendFragment}.
+     * Method called via OnListener in {@link com.jhdev.mbstest.main.core.CloudBackendFragment}.
      */
     @Override
     public void onBroadcastMessageReceived(List<CloudEntity> l) {
         for (CloudEntity e : l) {
             String message = (String) e.get(BROADCAST_PROP_MESSAGE);
-            int duration = Integer.parseInt((String) e.get(BROADCAST_PROP_DURATION));
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
             Log.i(Consts.TAG, "A message was received with content: " + message);
         }
     }
 
     /**
-     * Method called via OnListener in {@link com.google.cloud.backend.core.CloudBackendFragment}.
+     * Method called via OnListener in {@link com.jhdev.mbstest.main.core.CloudBackendFragment}.
      */
     @Override
     public void onCreateFinished() {
@@ -610,7 +611,8 @@ public class MainActivity extends FragmentActivity
 //                        updateGuestbookView();
                         masterPinList = results;
                         if (results != null) {
-                            Toast.makeText(getBaseContext(), "cq list size= " + results.size(), Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(getBaseContext(), "cq list size= " + results.size(), Toast.LENGTH_SHORT).show();
+                            Log.d("simplepin","cq list size=" + results.size());
                         }
                         updatePinsOnMap();
                     }
@@ -619,17 +621,24 @@ public class MainActivity extends FragmentActivity
                     public void onError(IOException exception) {
 //                        mAnnounceTxt.setText(R.string.announce_fail);
 //                        animateArrival();
-//                        handleEndpointException(exception);
-                        Toast.makeText(getBaseContext(), "cq list failed", Toast.LENGTH_SHORT).show();
-
+                        handleEndpointException(exception);
                     }
                 };
 
-        // execute the query with the handler
-        // TODO watch out for the 50 Limit in place
-        mProcessingFragment.getCloudBackend().listByKind(
-                "simplepin", CloudEntity.PROP_CREATED_AT, CloudQuery.Order.DESC, 50,
-                CloudQuery.Scope.FUTURE_AND_PAST, handler);
+//        mProcessingFragment.getCloudBackend().listByKind(
+//                "simplepin", CloudEntity.PROP_CREATED_AT, CloudQuery.Order.DESC, 50,
+//                CloudQuery.Scope.FUTURE_AND_PAST, handler);
+
+        CloudQuery cq = new CloudQuery("simplepin");
+        cq.setScope(CloudQuery.Scope.PAST);
+        cq.setFilter(Filter.eq("status", "active"));
+//        cq.setSort("status", CloudQuery.Order.DESC);
+//        cq.setSort(CloudEntity.PROP_CREATED_AT, CloudQuery.Order.DESC);
+
+        mProcessingFragment.getCloudBackend().list(cq, handler);
+
+
+
     }
 
     private void updatePinsOnMap (){
@@ -638,7 +647,6 @@ public class MainActivity extends FragmentActivity
         double lng = 0;
 
         for (int i=0; i< masterPinList.size(); i++) {
-//            Log.d("pin", masterPinList.get(i).get("title").toString());
             CloudEntity ce = masterPinList.get(i);
 
             lat = Double.parseDouble(ce.get("latitude").toString());

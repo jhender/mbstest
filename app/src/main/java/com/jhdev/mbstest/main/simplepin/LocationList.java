@@ -27,13 +27,16 @@ import com.jhdev.mbstest.main.core.CloudBackendFragment;
 import com.jhdev.mbstest.main.core.CloudCallbackHandler;
 import com.jhdev.mbstest.main.core.CloudEntity;
 import com.jhdev.mbstest.main.core.CloudQuery;
+import com.jhdev.mbstest.main.core.Filter;
 
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class LocationList extends ListActivity
-        implements LoaderCallbacks<Cursor>, CloudBackendFragment.OnListener {
+public class LocationList extends ListActivity implements CloudBackendFragment.OnListener {
+
+//        implements LoaderCallbacks<Cursor>,
+//        CloudBackendFragment.OnListener {
 
     // This is the Adapter being used to display the list's data
     SimpleCursorAdapter mAdapter;
@@ -63,28 +66,6 @@ public class LocationList extends ListActivity
         ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
         root.addView(progressBar);
 
-//        // For the cursor adapter, specify which columns go into which views
-//        String[] fromColumns = {ContactsContract.Data.DISPLAY_NAME};
-//        int[] toViews = {android.R.id.text1}; // The TextView in simple_list_item_1
-
-        // For the cursor adapter, specify which columns go into which views
-//        String[] fromColumns = {LocationsContentProvider.FIELD_TITLE, LocationsContentProvider.FIELD_ADDRESS};
-//        int[] toViews = {R.id.firstLine, R.id.secondLine}; // The TextView in simple_list_item_1
-//
-        // Create an empty adapter we will use to display the loaded data.
-        // We pass null for the cursor, then update it in onLoadFinished()
-//        mAdapter = new SimpleCursorAdapter(this,
-//                R.layout.list_item,
-//                null,
-//                fromColumns,
-//                toViews,
-//                0);
-//        setListAdapter(mAdapter);
-
-        // Prepare the loader.  Either re-connect with an existing one,
-        // or start a new one.
-//        getLoaderManager().initLoader(0, null, this);
-
         mFragmentManager = getFragmentManager();
         initiateFragments();
     }
@@ -101,7 +82,8 @@ public class LocationList extends ListActivity
 //                        updateGuestbookView();
                         pins = results;
                         if (results != null) {
-                            Toast.makeText(getBaseContext(), "cq list size= " + results.size(), Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(getBaseContext(), "cq list size= " + results.size(), Toast.LENGTH_SHORT).show();
+                            Log.d("simplepin","cq list size=" + results.size());
                         }
                         updateList();
                     }
@@ -111,42 +93,47 @@ public class LocationList extends ListActivity
 //                        mAnnounceTxt.setText(R.string.announce_fail);
 //                        animateArrival();
                         handleEndpointException(exception);
-//                        Toast.makeText(getBaseContext(), "cq list failed", Toast.LENGTH_SHORT).show();
                     }
                 };
+//        mProcessingFragment.getCloudBackend().listByKind(
+//                "simplepin", CloudEntity.PROP_CREATED_AT, CloudQuery.Order.DESC, 50,
+//                CloudQuery.Scope.FUTURE_AND_PAST, handler);
 
-        // execute the query with the handler
-        // TODO watch out for the 50 Limit in place
-        mProcessingFragment.getCloudBackend().listByKind(
-                "simplepin", CloudEntity.PROP_CREATED_AT, CloudQuery.Order.DESC, 50,
-                CloudQuery.Scope.FUTURE_AND_PAST, handler);
+        CloudQuery cq = new CloudQuery("simplepin");
+        cq.setScope(CloudQuery.Scope.PAST);
+        cq.setFilter(Filter.eq("status", "active"));
+//        cq.setSort("status", CloudQuery.Order.DESC);
+//        cq.setSort(CloudEntity.PROP_CREATED_AT, CloudQuery.Order.DESC);
+
+        mProcessingFragment.getCloudBackend().list(cq, handler);
+
     }
 
-    // Loading the data
-    @Override
-    public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
- 
-        // Uri to the content provider LocationsContentProvider
-        Uri uri = LocationsContentProvider.CONTENT_URI;
- 
-        // Fetches all the rows from locations table
-        return new CursorLoader(this, uri, null, null, null, null);
-    }        
-     
-    // Called when a previously created loader has finished loading
-    public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
-        // Swap the new cursor in.  (The framework will take care of closing the
-        // old cursor once we return.)
-        mAdapter.swapCursor(arg1);
-    }
-
-    // Called when a previously created loader is reset, making the data unavailable
-    public void onLoaderReset(Loader<Cursor> loader) {
-        // This is called when the last Cursor provided to onLoadFinished()
-        // above is about to be closed.  We need to make sure we are no
-        // longer using it.
-        mAdapter.swapCursor(null);
-    }
+//    // Loading the data
+//    @Override
+//    public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+//
+//        // Uri to the content provider LocationsContentProvider
+//        Uri uri = LocationsContentProvider.CONTENT_URI;
+//
+//        // Fetches all the rows from locations table
+//        return new CursorLoader(this, uri, null, null, null, null);
+//    }
+//
+//    // Called when a previously created loader has finished loading
+//    public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
+//        // Swap the new cursor in.  (The framework will take care of closing the
+//        // old cursor once we return.)
+//        mAdapter.swapCursor(arg1);
+//    }
+//
+//    // Called when a previously created loader is reset, making the data unavailable
+//    public void onLoaderReset(Loader<Cursor> loader) {
+//        // This is called when the last Cursor provided to onLoadFinished()
+//        // above is about to be closed.  We need to make sure we are no
+//        // longer using it.
+//        mAdapter.swapCursor(null);
+//    }
 
     @Override 
     public void onListItemClick(ListView l, View v, int position, long id) {
@@ -252,7 +239,7 @@ public class LocationList extends ListActivity
     }
 
     /**
-     * Method called via OnListener in {@link com.google.cloud.backend.core.CloudBackendFragment}.
+     * Method called via OnListener in {@link com.jhdev.mbstest.main.core.CloudBackendFragment}.
      */
     @Override
     public void onBroadcastMessageReceived(List<CloudEntity> l) {
@@ -265,7 +252,7 @@ public class LocationList extends ListActivity
     }
 
     /**
-     * Method called via OnListener in {@link com.google.cloud.backend.core.CloudBackendFragment}.
+     * Method called via OnListener in {@link com.jhdev.mbstest.main.core.CloudBackendFragment}.
      */
     @Override
     public void onCreateFinished() {
