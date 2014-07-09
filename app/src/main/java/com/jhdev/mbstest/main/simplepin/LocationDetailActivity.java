@@ -49,7 +49,9 @@ public class LocationDetailActivity extends Activity implements CloudBackendFrag
 
     private CloudEntity cloudEntity = new CloudEntity("simplepin");
 
-	@Override
+    public static int DELETE_ITEM = 6666;
+
+    @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -296,6 +298,11 @@ public class LocationDetailActivity extends Activity implements CloudBackendFrag
 
         mProcessingFragment.getCloudBackend().update(cloudEntity, handler);
 
+//        finish();
+
+        Intent intent = new Intent();
+        intent.putExtra("ITEM_ID", id);
+        setResult(DELETE_ITEM , intent);
         finish();
     }
 

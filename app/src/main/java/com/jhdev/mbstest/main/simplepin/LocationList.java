@@ -49,6 +49,8 @@ public class LocationList extends ListActivity implements CloudBackendFragment.O
 
     private List<CloudEntity> pins = new LinkedList<CloudEntity>();
 
+    int requestCode = 0;
+
     @Override
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +70,7 @@ public class LocationList extends ListActivity implements CloudBackendFragment.O
 
         mFragmentManager = getFragmentManager();
         initiateFragments();
+
     }
 
     private void listPins() {
@@ -109,32 +112,6 @@ public class LocationList extends ListActivity implements CloudBackendFragment.O
 
     }
 
-//    // Loading the data
-//    @Override
-//    public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-//
-//        // Uri to the content provider LocationsContentProvider
-//        Uri uri = LocationsContentProvider.CONTENT_URI;
-//
-//        // Fetches all the rows from locations table
-//        return new CursorLoader(this, uri, null, null, null, null);
-//    }
-//
-//    // Called when a previously created loader has finished loading
-//    public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
-//        // Swap the new cursor in.  (The framework will take care of closing the
-//        // old cursor once we return.)
-//        mAdapter.swapCursor(arg1);
-//    }
-//
-//    // Called when a previously created loader is reset, making the data unavailable
-//    public void onLoaderReset(Loader<Cursor> loader) {
-//        // This is called when the last Cursor provided to onLoadFinished()
-//        // above is about to be closed.  We need to make sure we are no
-//        // longer using it.
-//        mAdapter.swapCursor(null);
-//    }
-
     @Override 
     public void onListItemClick(ListView l, View v, int position, long id) {
         // Do something when a list item is clicked
@@ -152,7 +129,9 @@ public class LocationList extends ListActivity implements CloudBackendFragment.O
         intent.putExtra("lng", ce.get("longitude").toString());
         intent.putExtra("position", position);
 
-    	startActivity(intent);    	    	    	
+//    	startActivity(intent);
+        startActivityForResult(intent, requestCode);
+
     }
     
     @Override
@@ -264,6 +243,34 @@ public class LocationList extends ListActivity implements CloudBackendFragment.O
         mListView.setAdapter(
                 new PinAdapter(this, R.layout.list_item, pins)
         );
+    }
+
+    @Override
+    public void onResume () {
+        super.onResume();
+
+        Bundle extras = getIntent().getExtras();
+        if (extras == null) {
+//            return;
+        } else {
+            // Get data via the key
+            String msg = extras.getString("message");
+            if (msg.equals("delete")) {
+                updateList();
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("LocationList","onActivityResult and resultCode = "+resultCode);
+        // TODO Auto-generated method stub
+
+        Toast.makeText(getBaseContext(), "resultcode received:" +resultCode, Toast.LENGTH_SHORT).show();
+
+        if (resultCode == 6666) {
+            listPins();
+        }
     }
     	
 }
