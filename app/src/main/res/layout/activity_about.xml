@@ -22,7 +22,7 @@
 		android:layout_height="wrap_content"
 		android:padding="5dp"
 		android:text="
-- Pins are across devices synced according to your google ID.\n
+- Pins are synced across devices according to your google ID.\n
 \n"
         android:textSize="16sp"
         android:layout_below="@id/textViewAbout1"/>

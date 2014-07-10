@@ -26,6 +26,16 @@
         android:orderInCategory="70"
         android:showAsAction="ifRoom"
         android:icon="@drawable/ic_action_new"
-        android:title="@string/save_my_location"/>  
-        
+        android:title="@string/save_my_location"/>
+    <item
+        android:id="@+id/switch_account"
+        android:orderInCategory="91"
+        android:showAsAction="never"
+        android:title="Switch Account"/>
+    <item
+        android:id="@+id/refresh_map"
+        android:orderInCategory="92"
+        android:showAsAction="never"
+        android:title="Refresh Map"/>
+
 </menu>

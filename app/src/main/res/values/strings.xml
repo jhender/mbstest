@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">MBSTEST.main</string>
+    <string name="app_name">SIMPLEPIN MBSTEST</string>
     <string name="hello_world">Hello world!</string>
     <string name="switch_account">Switch Account</string>
     <string name="view_intro">View Intro</string>

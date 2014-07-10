@@ -11,6 +11,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Address;
 import android.location.Geocoder;
@@ -72,6 +73,8 @@ public class MainActivity extends FragmentActivity
     private static final String BROADCAST_PROP_MESSAGE = "message";
 
     private List<CloudEntity> masterPinList = new LinkedList<CloudEntity>();
+
+    static String cloudStoreName = "[private]simplepin";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -381,9 +384,9 @@ public class MainActivity extends FragmentActivity
 
     @Override
     public boolean onOptionsItemSelected (MenuItem item) {
-    	//Toast.makeText(getBaseContext(), "Selected", Toast.LENGTH_SHORT).show();    	
+    	//Toast.makeText(getBaseContext(), "Selected", Toast.LENGTH_SHORT).show();
     	switch (item.getItemId()) {
-    	
+
     	case R.id.delete_all_markers:
 //    		// Removing all markers from the Google Map
 //            googleMap.clear();
@@ -400,14 +403,23 @@ public class MainActivity extends FragmentActivity
     		startActivity(new Intent(this, LocationList.class));
     		break;
     	case R.id.about:
-    	    // Display 'About' page (activity)    
+    	    // Display 'About' page (activity)
     	    Intent opAbout = new Intent(this, About.class);
     	    startActivity(opAbout);
-    	    break;    	    
+    	    break;
     	case R.id.save_my_location:
     		saveMyLocation();
     		break;
+        case R.id.switch_account:
+            mProcessingFragment.signInAndSubscribe(true);
+            return true;
+        case R.id.refresh_map:
+            googleMap.clear();
+            listPins();
+            break;
     	}
+
+
         
     	return true;
     }
@@ -578,6 +590,17 @@ public class MainActivity extends FragmentActivity
         CloudQuery cq = new CloudQuery("simplepin");
         cq.setScope(CloudQuery.Scope.PAST);
         cq.setFilter(Filter.eq("status", "active"));
+        //TODO Filter OWN pins only. Currently it is showing entire datastore
+//        String accountName = getPreferences(MODE_PRIVATE).getString("PREF_KEY_ACCOUNT_NAME",)
+//        SharedPreferences pref =
+//        Log.d("mainactivity", accountName);
+//        cq.setFilter(
+//            Filter.and(
+//                (Filter.eq("_created_by", accountName)),
+//                (Filter.eq("status","active"))
+//            )
+//        );
+
 //        cq.setSort("status", CloudQuery.Order.DESC);
 //        cq.setSort(CloudEntity.PROP_CREATED_AT, CloudQuery.Order.DESC);
 

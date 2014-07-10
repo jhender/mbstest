@@ -485,6 +485,7 @@ containing a value of this type.
         public static final int normal=0x7f070001;
         public static final int posts_list=0x7f07001e;
         public static final int production=0x7f070007;
+        public static final int refresh_map=0x7f07004f;
         public static final int sandbox=0x7f070008;
         public static final int satellite=0x7f070002;
         public static final int save_my_location=0x7f07004e;
@@ -604,7 +605,6 @@ containing a value of this type.
             backward-compatibility can go here.
         
  API 11 theme customizations can go here. 
- API 14 theme customizations can go here. 
          */
         public static final int AppBaseTheme=0x7f0b0001;
         /**  All customizations that are NOT specific to a particular API-level can go here. 
@@ -614,6 +614,7 @@ containing a value of this type.
         public static final int DisplayText=0x7f0b0004;
         public static final int IntroDscrpText=0x7f0b0005;
         public static final int IntroTitleText=0x7f0b0006;
+        public static final int MyActionBar=0x7f0b000e;
         public static final int PostText=0x7f0b0007;
         public static final int SignatureText=0x7f0b0008;
         public static final int Theme_IAPTheme=0x7f0b0009;
