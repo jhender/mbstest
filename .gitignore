@@ -33,3 +33,5 @@ build/
 
 #consts file
 /app/src/main/java/com/jhdev/mbstest/main/core/consts.java
+.gitignore
+local.properties

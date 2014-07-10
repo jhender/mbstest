@@ -1,9 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+    }
     compileSdkVersion 20
-    buildToolsVersion "20.0.0"
-
+    buildToolsVersion '20.0.0'
     defaultConfig {
         applicationId "com.jhdev.mbstest.main"
         minSdkVersion 16
@@ -11,7 +12,6 @@ android {
         versionCode 1
         versionName "1.0"
     }
-
     buildTypes {
         release {
             runProguard false

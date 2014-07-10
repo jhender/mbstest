@@ -18,8 +18,6 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,8 +49,12 @@ import com.jhdev.mbstest.main.core.Consts;
 import com.jhdev.mbstest.main.core.Filter;
 
 public class MainActivity extends FragmentActivity 
-	implements LoaderCallbacks<Cursor>, MarkerCreateDialogFragment.MarkerCreateDialogListener,
-    GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener, OnListener {
+	implements
+//        LoaderCallbacks<Cursor>,
+        MarkerCreateDialogFragment.MarkerCreateDialogListener,
+        GooglePlayServicesClient.ConnectionCallbacks,
+        GooglePlayServicesClient.OnConnectionFailedListener,
+        OnListener {
 
     protected static final String Alert = null;
 	private static final String TAG = null;
@@ -67,7 +69,6 @@ public class MainActivity extends FragmentActivity
     private CloudBackendFragment mProcessingFragment;
 
     private static final String PROCESSING_FRAGMENT_TAG = "BACKEND_FRAGMENT";
-    private static final String BROADCAST_PROP_DURATION = "duration";
     private static final String BROADCAST_PROP_MESSAGE = "message";
 
     private List<CloudEntity> masterPinList = new LinkedList<CloudEntity>();
@@ -98,7 +99,7 @@ public class MainActivity extends FragmentActivity
             googleMap.setMyLocationEnabled(true);
             
 			// Invoke LoaderCallbacks to retrieve and draw already saved locations in map
-            getSupportLoaderManager().initLoader(0, null, this);
+//            getSupportLoaderManager().initLoader(0, null, this);
             
             //centers the map somewhere
             if (lastMarkerLatLng == null) {
@@ -258,7 +259,7 @@ public class MainActivity extends FragmentActivity
         }
     }
 
- 
+
 //    private class LocationInsertTask extends AsyncTask<ContentValues, Void, Void>{
 //        @Override
 //        protected Void doInBackground(ContentValues... contentValues) {
@@ -299,71 +300,16 @@ public class MainActivity extends FragmentActivity
     	return true;
     }
  
-    @Override
-    public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
- 
-//        // Uri to the content provider LocationsContentProvider
-//        Uri uri = LocationsContentProvider.CONTENT_URI;
+//    @Override
+//    public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 //
-//        // Fetches all the rows from locations table
-//        return new CursorLoader(this, uri, null, null, null, null);
-        return null;
-    }
- 
-    @Override
-    public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
-//        int locationCount = 0;
-//        double lat=0;
-//        double lng=0;
-//        float zoom=0;
-//
-//        // Number of locations available in the SQLite database table
-//        locationCount = arg1.getCount();
-//
-//        // Move the current record pointer to the first row of the table
-//        arg1.moveToFirst();
-//
-//        for(int i=0;i<locationCount;i++){
-//
-//        	// Get the details for putting into marker. I'm sure there's some way of condensing this.
-//            // Get the latitude
-//            lat = arg1.getDouble(arg1.getColumnIndex(LocationsContentProvider.FIELD_LAT));
-//            Log.d(TAG, "marker: LAT :"  + lat );
-//            lng = arg1.getDouble(arg1.getColumnIndex(LocationsContentProvider.FIELD_LNG));
-//            zoom = arg1.getFloat(arg1.getColumnIndex(LocationsContentProvider.FIELD_ZOOM));
-//             // Creating an instance of LatLng to plot the location in Google Maps
-//            LatLng location = new LatLng(lat, lng);
-//            String addr = arg1.getString(arg1.getColumnIndex(LocationsContentProvider.FIELD_ADDRESS));
-//            // TODO replace sub_map_name once second table is joined
-//            //String sub_map_name = arg1.getString(arg1.getColumnIndex(LocationsContentProvider.FIELD_SUB_MAP));
-//            String title = arg1.getString(arg1.getColumnIndex(LocationsContentProvider.FIELD_TITLE));
-//
-//            googleMap.addMarker(new MarkerOptions()
-//            		.position(location)
-//            		//.title("submap: " + sub_map_name + "\n Title: " + title )
-//            		.title(title)
-//            		.snippet(addr)
-//    				.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-//
-////            // Drawing the marker in the Google Maps
-////            drawMarker(location);
-//
-//             // Traverse the pointer to the next row
-//            arg1.moveToNext();
-//        }
-//
-//        if(locationCount>0 && lastMarkerLatLng == null){
-//            // Moving CameraPosition to last clicked position
-//        	googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lat,lng)));
-//            // Setting the zoom level in the map on last position  is clicked
-//            googleMap.animateCamera(CameraUpdateFactory.zoomTo(zoom));
-//            }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> arg0) {
-        // TODO Auto-generated method stub
-    }
+////        // Uri to the content provider LocationsContentProvider
+////        Uri uri = LocationsContentProvider.CONTENT_URI;
+////
+////        // Fetches all the rows from locations table
+////        return new CursorLoader(this, uri, null, null, null, null);
+//        return null;
+//    }
 
     public void showMarkerCreateDialog() {
         // Create an instance of the dialog fragment and show it

@@ -119,7 +119,6 @@ public class LocationDetailActivity extends Activity implements CloudBackendFrag
             	//geo: url or maps.google.com url both should work
             	//String uriBegin = "geo:" + lattext + "," + lngtext;
             	String uriBegin = "https://maps.google.com/maps?q=loc:";
-            	String query = lattext + "," + lngtext + "(" + titletext + ")";
             	String uriString = uriBegin + lattext + "," + lngtext + "(" + titletext + ")" + "&z=16";
             	Uri uri = Uri.parse(uriString);
             	Log.d("uri", "is:" + uri);
@@ -288,6 +287,7 @@ public class LocationDetailActivity extends Activity implements CloudBackendFrag
             @Override
             public void onComplete(final CloudEntity result) {
                 Toast.makeText(getBaseContext(), "Pin deleted.", Toast.LENGTH_SHORT).show();
+                finish();
             }
 
             @Override
@@ -298,12 +298,10 @@ public class LocationDetailActivity extends Activity implements CloudBackendFrag
 
         mProcessingFragment.getCloudBackend().update(cloudEntity, handler);
 
-//        finish();
-
         Intent intent = new Intent();
         intent.putExtra("ITEM_ID", id);
         setResult(DELETE_ITEM , intent);
-        finish();
+//        finish();
     }
 
 }

@@ -3,15 +3,9 @@ package com.jhdev.mbstest.main.simplepin;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ListActivity;
-import android.app.LoaderManager.LoaderCallbacks;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,20 +29,11 @@ import java.util.List;
 
 public class LocationList extends ListActivity implements CloudBackendFragment.OnListener {
 
-//        implements LoaderCallbacks<Cursor>,
-//        CloudBackendFragment.OnListener {
-
-    // This is the Adapter being used to display the list's data
-    SimpleCursorAdapter mAdapter;
-
     private FragmentManager mFragmentManager;
     private CloudBackendFragment mProcessingFragment;
     private static final String PROCESSING_FRAGMENT_TAG = "BACKEND_FRAGMENT";
-
     private ListView mListView;
-
     private List<CloudEntity> pins = new LinkedList<CloudEntity>();
-
     int requestCode = 0;
 
     @Override
@@ -105,8 +90,6 @@ public class LocationList extends ListActivity implements CloudBackendFragment.O
         CloudQuery cq = new CloudQuery("simplepin");
         cq.setScope(CloudQuery.Scope.PAST);
         cq.setFilter(Filter.eq("status", "active"));
-//        cq.setSort("status", CloudQuery.Order.DESC);
-//        cq.setSort(CloudEntity.PROP_CREATED_AT, CloudQuery.Order.DESC);
 
         mProcessingFragment.getCloudBackend().list(cq, handler);
 
@@ -222,12 +205,12 @@ public class LocationList extends ListActivity implements CloudBackendFragment.O
      */
     @Override
     public void onBroadcastMessageReceived(List<CloudEntity> l) {
-        for (CloudEntity e : l) {
-//            String message = (String) e.get(BROADCAST_PROP_MESSAGE);
-//            int duration = Integer.parseInt((String) e.get(BROADCAST_PROP_DURATION));
-//            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-//            Log.i(Consts.TAG, "A message was received with content: " + message);
-        }
+//        for (CloudEntity e : l) {
+////            String message = (String) e.get(BROADCAST_PROP_MESSAGE);
+////            int duration = Integer.parseInt((String) e.get(BROADCAST_PROP_DURATION));
+////            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+////            Log.i(Consts.TAG, "A message was received with content: " + message);
+//        }
     }
 
     /**
@@ -250,9 +233,7 @@ public class LocationList extends ListActivity implements CloudBackendFragment.O
         super.onResume();
 
         Bundle extras = getIntent().getExtras();
-        if (extras == null) {
-//            return;
-        } else {
+        if (extras != null) {
             // Get data via the key
             String msg = extras.getString("message");
             if (msg.equals("delete")) {
@@ -264,11 +245,8 @@ public class LocationList extends ListActivity implements CloudBackendFragment.O
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d("LocationList","onActivityResult and resultCode = "+resultCode);
-        // TODO Auto-generated method stub
-
-        Toast.makeText(getBaseContext(), "resultcode received:" +resultCode, Toast.LENGTH_SHORT).show();
-
-        if (resultCode == 6666) {
+//        Toast.makeText(getBaseContext(), "resultcode received:" +resultCode, Toast.LENGTH_SHORT).show();
+        if (resultCode == 6666) { // 6666 = delete code from LocationDetailActivity
             listPins();
         }
     }

@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingBottom="10dp"
-        android:text="Long Press to save a new location\n"
+        android:text="Simple Pin\n"
         android:textSize="18sp" />
     
     <TextView
@@ -22,8 +22,8 @@
 		android:layout_height="wrap_content"
 		android:padding="5dp"
 		android:text="
-		v 0.2.0\n
-        \n"
+- Pins are across devices synced according to your google ID.\n
+\n"
         android:textSize="16sp"
         android:layout_below="@id/textViewAbout1"/>
   
@@ -32,7 +32,7 @@
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:padding="5dp"
-		android:text="http://www.simplepin.co"
+		android:text=""
         android:textSize="16sp"
         android:layout_below="@id/textViewAbout2"/>
         
